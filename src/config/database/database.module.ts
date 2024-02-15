@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { MysqlModule } from './mysql/mysql.module';
+import { MysqlConfigModule } from './mysql/config.module';
 
 @Module({
-  imports: [MysqlModule],
+  imports: [MysqlConfigModule],
 })
 export class DatabaseModule {}

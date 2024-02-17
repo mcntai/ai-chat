@@ -16,7 +16,7 @@ export abstract class BaseRepository<T extends Base> {
     return await this.repository.save(entity);
   }
 
-  public async findOneById(id: string): Promise<T> {
+  public async findById(id: string): Promise<T> {
     return await this.repository.findOneBy({ id } as FindOptionsWhere<T>);
   }
 

@@ -22,4 +22,12 @@ export class AppConfigService {
   get port(): number {
     return Number(this.configService.get<number>('app.port'));
   }
+
+  get jwtSecret(): string {
+    return this.configService.get<string>('app.jwtSecret');
+  }
+
+  get jwtExpiresIn(): string {
+    return this.configService.get<string>('app.jwtExpiresIn');
+  }
 }

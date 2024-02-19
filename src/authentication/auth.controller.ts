@@ -8,7 +8,7 @@ export class AuthController {
   private readonly authService: AuthService;
 
   @Post('register')
-  private async register(): Promise<RegisterResponseDto> {
+  public async register(): Promise<RegisterResponseDto> {
     const user = await this.authService.register();
 
     return {
@@ -19,7 +19,7 @@ export class AuthController {
   }
 
   @Post('login')
-  private login(@Body() payload: LoginDto): Promise<string> {
+  public login(@Body() payload: LoginDto): Promise<string> {
     return this.authService.login(payload);
   }
 }

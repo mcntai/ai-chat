@@ -15,7 +15,7 @@ export class UsersService {
     id: string,
     relations: string[] = [],
   ): Promise<UserEntity | null> {
-    return await this.usersRepository.findOneById(id);
+    return await this.usersRepository.findById(id);
   }
 
   async create(inputs: any): Promise<UserEntity> {

@@ -5,4 +5,5 @@ export default registerAs('app', () => ({
   url: process.env.APP_URL,
   port: process.env.APP_PORT,
   jwtSecret: process.env.JWT_SECRET,
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN,
 }));

@@ -7,7 +7,7 @@ async function bootstrap() {
 
   app.enableCors();
 
-  const appConfig: AppConfigService = app.get('AppConfigService');
+  const appConfig: AppConfigService = app.get(AppConfigService);
 
   await app.listen(appConfig.port).then(() => {
     console.log(`Server started on ${appConfig.url}`);

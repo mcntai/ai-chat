@@ -9,9 +9,7 @@ import { AuthHelper } from './auth.helper';
 import { AppConfigModule } from 'config/app/config.module';
 import { AppConfigService } from 'config/app/config.service';
 import { User } from 'modules/user/user.entity';
-import { UserModule } from 'modules/user/user.module';
 import { UserRepository } from 'modules/user/user.repository';
-import { Repository } from 'typeorm';
 
 @Module({
   imports:   [

@@ -1,15 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { LoginDto, RegisterResponseDto } from './dto/auth.dto';
 import { argumentsAssert } from 'common/errors';
-import { User } from 'models/users/entities/user.entity';
+import { User } from 'modules/user/user.entity';
 import { AuthHelper } from './auth.helper';
-import { UsersRepository } from 'models/users/users.repository';
+import { UserRepository } from 'modules/user/user.repository';
 
 @Injectable()
 export class AuthService {
-  @InjectRepository(User)
-  private readonly userRepository: UsersRepository;
+  constructor(private readonly userRepository: UserRepository) {}
 
   @Inject(AuthHelper)
   private readonly authHelper: AuthHelper;
@@ -23,6 +21,7 @@ export class AuthService {
 
   async register(): Promise<RegisterResponseDto> {
     const user = new User();
+
     const registeredUser = await this.userRepository.create(user);
 
     user.authToken = this.authHelper.encode(registeredUser.id);
@@ -42,6 +41,6 @@ export class AuthService {
 
     argumentsAssert(user, 'Invalid authToken');
 
-    return this.generateAccessToken(user);
+    return this.generateAccessToken(user[0]);
   }
 }

@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { User } from 'models/users/entities/user.entity';
-import { Repository } from 'typeorm';
+import { User } from 'modules/user/user.entity';
+import { UserRepository } from 'modules/user/user.repository';
 import { InvalidArgumentsError } from 'common/errors';
 import * as assert from 'assert';
 
@@ -12,8 +11,7 @@ export class AuthHelper {
   private readonly secret: string;
 
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
     private readonly jwtSecret: string,
   ) {

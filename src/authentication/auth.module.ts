@@ -8,35 +8,38 @@ import { JwtStrategy } from './jwt.strategy';
 import { AuthHelper } from './auth.helper';
 import { AppConfigModule } from 'config/app/config.module';
 import { AppConfigService } from 'config/app/config.service';
-import { User } from 'models/users/entities/user.entity';
+import { User } from 'modules/user/user.entity';
+import { UserModule } from 'modules/user/user.module';
+import { UserRepository } from 'modules/user/user.repository';
 import { Repository } from 'typeorm';
 
 @Module({
-  imports: [
+  imports:   [
     AppConfigModule,
+    TypeOrmModule.forFeature([User]),
     PassportModule.register({ defaultStrategy: 'jwt', property: 'user' }),
     JwtModule.registerAsync({
-      inject: [AppConfigService],
-      imports: [AppConfigModule],
+      inject:     [AppConfigService],
+      imports:    [AppConfigModule],
       useFactory: (appConfigService: AppConfigService) => ({
-        secret: appConfigService.jwtSecret,
+        secret:      appConfigService.jwtSecret,
         signOptions: { expiresIn: appConfigService.jwtExpiresIn },
       }),
     }),
-    TypeOrmModule.forFeature([User]),
   ],
   providers: [
+    UserRepository,
     AuthService,
     JwtStrategy,
-    AuthHelper,
     {
-      provide: AuthHelper,
-      useFactory: (userRepository: Repository<User>, jwtService: JwtService, appConfigService: AppConfigService) =>
+      provide:    AuthHelper,
+      useFactory: (userRepository: UserRepository, jwtService: JwtService, appConfigService: AppConfigService) =>
                     new AuthHelper(userRepository, jwtService, appConfigService.jwtSecret),
-      inject: [getRepositoryToken(User), JwtService, AppConfigService],
+      inject:     [getRepositoryToken(User), JwtService, AppConfigService, UserRepository],
     },
   ],
 
   controllers: [AuthController],
 })
-export class AuthModule {}
+export class AuthModule {
+}

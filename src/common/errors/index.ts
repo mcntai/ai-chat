@@ -22,6 +22,13 @@ export class InternalServerError extends HttpException {
   }
 }
 
+export class UnAuthorizedError extends HttpException {
+  constructor(message: string) {
+    super(message, HttpStatus.UNAUTHORIZED);
+    this.name = 'UnAuthorizedError';
+  }
+}
+
 export const argumentsAssert = (value, message) => {
   if (!value) {
     throw new InvalidArgumentsError(message);

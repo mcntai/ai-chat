@@ -6,10 +6,10 @@ import { LinkedAccount } from 'modules/linked-account/linked-account.entity';
 
 @Entity({ name: 'User' })
 export class User extends Base implements UserInterface {
-  @Column({ unique: true, length: 255 })
+  @Column({ unique: true, length: 255, nullable: true })
   authToken: string;
 
-  @Column({ default: 3 })
+  @Column()
   coins: number;
 
   @Column({ default: 0 })

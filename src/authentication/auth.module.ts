@@ -31,8 +31,8 @@ import { UserRepository } from 'modules/user/user.repository';
     JwtStrategy,
     {
       provide:    AuthHelper,
-      useFactory: (userRepository: UserRepository, jwtService: JwtService, appConfigService: AppConfigService) =>
-                    new AuthHelper(userRepository, jwtService, appConfigService.jwtSecret),
+      useFactory: (userRepository: UserRepository, jwtService: JwtService, config: AppConfigService) =>
+                    new AuthHelper(userRepository, jwtService, config.jwtSecret, config.jwtExpiresIn),
       inject:     [getRepositoryToken(User), JwtService, AppConfigService, UserRepository],
     },
   ],

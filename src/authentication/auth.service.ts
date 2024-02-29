@@ -5,9 +5,12 @@ import { User } from 'modules/user/user.entity';
 import { AuthHelper } from './auth.helper';
 import { UserRepository } from 'modules/user/user.repository';
 
+const DEFAULT_COINS_QTY = 3;
+
 @Injectable()
 export class AuthService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(private readonly userRepository: UserRepository) {
+  }
 
   @Inject(AuthHelper)
   private readonly authHelper: AuthHelper;
@@ -19,12 +22,14 @@ export class AuthService {
     return this.authHelper.encode(payload, shouldExpire);
   }
 
-  async register(): Promise<RegisterResponseDto> {
+  public async register(): Promise<RegisterResponseDto> {
     const user = new User();
+
+    user.coins = DEFAULT_COINS_QTY;
 
     const registeredUser = await this.userRepository.create(user);
 
-    user.authToken = this.authHelper.encode(registeredUser.id);
+    user.authToken = this.authHelper.encode({ id: registeredUser.id });
     user.id = registeredUser.id;
 
     await this.userRepository.update(user);
@@ -32,15 +37,15 @@ export class AuthService {
     return Object.assign(user, { accessToken: this.generateAccessToken(user) });
   }
 
-  async login(body: LoginDto): Promise<string> {
+  public async login(body: LoginDto): Promise<string> {
     const { authToken }: LoginDto = body;
 
-    const userId: string = this.authHelper.decode(authToken);
+    const decoded: { [key: string]: any } = this.authHelper.decode(authToken);
 
-    const user: User = await this.userRepository.findById(userId);
+    const user: User = await this.userRepository.findById(decoded.id);
 
     argumentsAssert(user, 'Invalid authToken');
 
-    return this.generateAccessToken(user[0]);
+    return this.generateAccessToken(user);
   }
 }

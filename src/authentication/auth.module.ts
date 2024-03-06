@@ -8,8 +8,8 @@ import { JwtStrategy } from './jwt.strategy';
 import { AuthHelper } from './auth.helper';
 import { AppConfigModule } from 'config/app/config.module';
 import { AppConfigService } from 'config/app/config.service';
-import { User } from 'modules/user/user.entity';
-import { UserRepository } from 'modules/user/user.repository';
+import { User } from 'modules/models/user/user.entity';
+import { UserRepository } from 'modules/models/user/user.repository';
 
 @Module({
   imports:   [

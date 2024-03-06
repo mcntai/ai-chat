@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common';
-import { UserModule } from 'modules/user/user.module';
-import { LinkedAccountModule } from 'modules/linked-account/linked-account.module';
-import { ChatModule } from 'modules/chat/chat.module';
-import { MessageModule } from 'modules/message/message.module';
+import { ModelsModule } from 'modules/models/models.module';
+import { CommonModule } from 'modules/common/common.module';
 
 @Module({
-  imports:   [UserModule, LinkedAccountModule, ChatModule, MessageModule],
+  imports: [ModelsModule, CommonModule],
 })
 export class ModulesModule {
 }

@@ -5,7 +5,7 @@ import { MessageInterface } from './message.interface';
 
 export enum Actor {
   USER = 'user',
-  AI = 'ai',
+  AI = 'assistant',
 }
 
 export enum AttachmentType {

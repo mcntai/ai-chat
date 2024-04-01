@@ -89,4 +89,14 @@ export class UserService {
 
     //TODO: delete files related to user
   }
+
+  public deductUserBalance(user): Promise<void> {
+    const dbUser = this.userRepository.findById(user.id);
+
+    return this.userRepository.deductUserBalance(user.id);
+  }
+
+  public getUserById(id: string): Promise<User> {
+    return this.userRepository.findById(id);
+  }
 }

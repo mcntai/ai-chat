@@ -11,6 +11,10 @@ export class ChatService {
     return this.chatRepository.create(payload);
   }
 
+  public getChatByCriteria(criteria): Promise<Chat> {
+    return this.chatRepository.findOne(criteria);
+  }
+
   public getChats(user): Promise<Chat[]> {
     return this.chatRepository.findAll({ where: { owner: user } });
   }

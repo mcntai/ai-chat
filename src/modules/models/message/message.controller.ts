@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Req, Query, UseGuards, Body, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Req, Query, Body } from '@nestjs/common';
+import { UseGuards, ValidationPipe, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { MessageService } from 'modules/models/message/message.service';
 import { JwtAuthGuard } from 'authentication/auth.guard';
 import { Message } from 'modules/models/message/message.entity';
-import { Request } from 'express';
+import { Request, Express } from 'express';
 import { CreateMessageDto } from 'modules/models/message/message.dto';
 import { GuardParams } from 'common/decorators/metadata';
 import { OwnershipGuard } from 'common/guards';
@@ -21,10 +23,12 @@ export class MessageController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('attachment'))
   public createMessage(
     @Req() req: Request,
+    @UploadedFile() attachment: Express.Multer.File,
     @Body(new ValidationPipe({ transform: true })) createMessageDTO: CreateMessageDto,
-  ): Promise<Message> {
-    return this.messageService.createMessage(createMessageDTO);
+  ): Promise<void> {
+    return this.messageService.createMessage(req.user, createMessageDTO, attachment);
   }
 }

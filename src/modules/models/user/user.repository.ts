@@ -17,4 +17,8 @@ export class UserRepository extends BaseRepository<User> implements UserReposito
 
     return Number(coins + paidCoins);
   }
+
+  public async deductUserBalance(user: User): Promise<void> {
+    await this.update(user);
+  }
 }

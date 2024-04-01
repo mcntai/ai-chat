@@ -30,4 +30,8 @@ export class AppConfigService {
   get jwtExpiresIn(): string {
     return this.configService.get<string>('app.jwtExpiresIn');
   }
+
+  get openAiApiKey(): string {
+    return this.configService.get<string>('app.openAiApiKey');
+  }
 }

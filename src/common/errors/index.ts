@@ -29,6 +29,13 @@ export class UnAuthorizedError extends HttpException {
   }
 }
 
+export class IntegrationError extends HttpException {
+  constructor(message: string) {
+    super(message, HttpStatus.BAD_REQUEST);
+    this.name = 'IntegrationError';
+  }
+}
+
 export const argumentsAssert = (value, message) => {
   if (!value) {
     throw new InvalidArgumentsError(message);

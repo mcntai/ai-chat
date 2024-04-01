@@ -20,7 +20,7 @@ export class ChatController {
   }
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, OwnershipGuard)
   public updateChat(
     @Req() req: Request,
     @Param('id') id: string,

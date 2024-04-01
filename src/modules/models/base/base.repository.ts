@@ -14,10 +14,12 @@ export abstract class BaseRepository<T extends Base> implements BaseRepositoryIn
     return this.repository.save(entity as T);
   }
 
-  public update(entity: T | ObjectLiteral): Promise<T> {
+  public async update(entity: T | ObjectLiteral): Promise<T> {
     assert(entity.id, 'update operation requires entity to have id');
 
-    return this.repository.save(entity as T);
+    await this.repository.save(entity as T, { reload: true });
+
+    return this.findById(entity.id);
   }
 
   public findById(id: string): Promise<T> {

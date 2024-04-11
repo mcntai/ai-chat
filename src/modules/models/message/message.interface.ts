@@ -1,11 +1,11 @@
 import { BaseEntityInterface } from 'modules/models/base/base.interface';
-import { Actor, AttachmentType } from 'modules/models/message/message.entity';
+import { ACTOR, ATTACHMENT_TYPE } from 'common/constants/message';
 import { Chat } from 'modules/models/chat/chat.entity';
 
 export interface MessageInterface extends BaseEntityInterface {
   text: string;
   chat: Chat;
-  actor: Actor;
+  actor: ACTOR;
   attachment: string;
-  attachmentType: AttachmentType;
+  attachmentType: ATTACHMENT_TYPE;
 }

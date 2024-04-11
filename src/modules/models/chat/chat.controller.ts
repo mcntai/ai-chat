@@ -3,8 +3,8 @@ import { Controller, Req, Get, Put, Delete, Param, Body, UseGuards, ValidationPi
 import { Chat } from 'modules/models/chat/chat.entity';
 import { Request } from 'express';
 import { JwtAuthGuard } from 'authentication/auth.guard';
-import { UpdateChatDTO } from 'modules/models/chat/chat.dto';
-import { OwnershipGuard } from 'common/guards';
+import { UpdateChatDto } from 'modules/models/chat/chat.dto';
+import { OwnershipGuard } from 'common/guards/ownership.guard';
 import { GuardParams } from 'common/decorators/metadata';
 
 @Controller('chats')
@@ -24,7 +24,7 @@ export class ChatController {
   public updateChat(
     @Req() req: Request,
     @Param('id') id: string,
-    @Body(new ValidationPipe({ transform: true })) updateChatDto: UpdateChatDTO,
+    @Body(new ValidationPipe({ transform: true })) updateChatDto: UpdateChatDto,
   ): Promise<Chat> {
     return this.chatService.updateChat(id, updateChatDto);
   }

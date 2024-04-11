@@ -1,6 +1,6 @@
 import { IsBoolean, IsOptional } from 'class-validator';
 
-export class UpdateChatDTO {
+export class UpdateChatDto {
   @IsBoolean()
   @IsOptional()
   public readonly archived: boolean;

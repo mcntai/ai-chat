@@ -5,7 +5,7 @@ import { LinkedAccountRepository } from './linked-account.repository';
 import { LinkedAccountController } from './linked-account.controller';
 import { LinkedAccount } from './linked-account.entity';
 import { CommonModule } from 'modules/common/common.module';
-import { OwnershipGuard } from 'common/guards';
+import { OwnershipGuard } from 'common/guards/ownership.guard';
 
 @Module({
   imports:     [TypeOrmModule.forFeature([LinkedAccount]), CommonModule],

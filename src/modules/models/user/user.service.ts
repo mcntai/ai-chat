@@ -99,4 +99,10 @@ export class UserService {
   public getUserById(id: string): Promise<User> {
     return this.userRepository.findById(id);
   }
+
+  // public async userSubscribedOrHaveBalance(user): Promise<void> {
+  //   const { subscribed, coins, paidCoins } = await this.userRepository.findById(user.id);
+  //
+  //   return subscribed || Boolean(Number(coins + paidCoins));
+  // }
 }

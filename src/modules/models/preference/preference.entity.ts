@@ -3,7 +3,7 @@ import { Base } from 'modules/models/base/base.entity';
 import { PreferenceInterface } from 'modules/models/preference/preference.interface';
 
 export enum Keys {
-  AI_SERVICES = 'AiServices',
+  AI_HANDLERS = 'AiHandlers',
 }
 
 @Entity({ name: 'Preference' })

@@ -1,22 +1,11 @@
-import { IsString, IsArray, ArrayNotEmpty, IsIn, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsArray, ArrayNotEmpty, IsObject, IsNotEmpty } from 'class-validator';
 
-class AiServiceConfig {
+export class AiHandlersConfigSchema {
   @IsArray()
   @ArrayNotEmpty()
-  @IsIn(['openai'], { each: true })
   all: string[];
 
-  @IsString()
-  default: string;
-}
-
-export class AiServicesSchemaDTO {
-  @ValidateNested()
-  @Type(() => AiServiceConfig)
-  text: AiServiceConfig;
-
-  @ValidateNested()
-  @Type(() => AiServiceConfig)
-  image: AiServiceConfig;
+  @IsObject()
+  @IsNotEmpty()
+  active: object;
 }

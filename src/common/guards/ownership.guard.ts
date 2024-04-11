@@ -20,16 +20,23 @@ export class OwnershipGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     const userId = request.user.id;
-    const recordId = request.params[guardParams.reqIdentifier];
+
+    const pathParams = request.params;
+    const queryParams = request.query;
+    const bodyParams = request.body;
+
+    const recordId = pathParams[guardParams.reqIdentifier]
+      || queryParams[guardParams.reqIdentifier]
+      || bodyParams[guardParams.reqIdentifier];
 
     const column: string = guardParams.column;
     const whereClause: Record<string, any> = guardParams.whereClause || {};
 
     const recordExists = await this.commonService.entityExists(
       guardParams.repository,
-      { [column]: recordId, 'owner.id': userId, ...whereClause });
+      { [column]: recordId, 'owner.id': userId, ...(whereClause) });
 
-    argumentsAssert(recordExists, 'Invalid identifier provided');
+    argumentsAssert(recordExists, `Record with such ${guardParams.reqIdentifier} was not found`);
 
     return true;
   }

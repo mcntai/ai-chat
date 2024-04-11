@@ -1,9 +1,9 @@
 import { IsBoolean, IsString, IsEnum, IsNotEmpty, IsOptional, ValidateIf } from 'class-validator';
-import { AttachmentType } from './message.entity';
+import { ATTACHMENT_TYPE } from 'common/constants/message';
 import { Express } from 'express';
 import { ToBoolean } from 'common/decorators/transformers';
 
-export class CreateMessageDto {
+export class CreateMessageBaseDto {
   @IsOptional()
   @IsString()
   public readonly chatId: string;
@@ -20,9 +20,9 @@ export class CreateMessageDto {
   public readonly text: string;
 
   @ValidateIf(({ attachment }) => attachment !== undefined)
-  @IsEnum(AttachmentType)
+  @IsEnum(ATTACHMENT_TYPE)
   @IsNotEmpty()
-  public readonly attachmentType: AttachmentType;
+  public readonly attachmentType: ATTACHMENT_TYPE;
 
   @IsOptional()
   public readonly attachment: Express.Multer.File;

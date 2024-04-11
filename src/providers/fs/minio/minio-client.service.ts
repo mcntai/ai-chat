@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { MinioService } from 'nestjs-minio-client';
-import { BufferedFile } from './file.model';
 import { IntegrationError } from 'common/errors';
-import { md5Hash } from 'common/utils/crypto';
-import { getExtensionByContentType } from 'common/utils/http';
 import { MinioConfigService } from 'config/fs/minio/config.service';
+
+interface UploadParams {
+  data: Buffer;
+  contentType: string;
+  path: string;
+}
 
 @Injectable()
 export class MinioClientService {
@@ -25,25 +28,23 @@ export class MinioClientService {
     this.port = this.config.port;
   }
 
-  public async upload(file: BufferedFile): Promise<string> {
-    const hash: string = md5Hash(Date.now().toString());
-    const extension: string = getExtensionByContentType(file.mimetype);
-    const fileName: string = 'dev/' + hash + extension;
-    const buffer: Buffer | string = file.buffer;
-    const metaData = { 'Content-Type': file.mimetype };
+  public async upload(params: UploadParams): Promise<string> {
+    const { data, path, contentType } = params;
 
-    await this.client.putObject(this.bucketName, fileName, buffer, metaData)
+    const metaData = { 'Content-Type': contentType };
+
+    await this.client.putObject(this.bucketName, path, data, metaData)
       .catch(err => {
-        throw new IntegrationError('Failed to upload file ' + err.stack);
+        throw new IntegrationError('Failed to upload file ' + err.message);
       });
 
-    return `${this.url}:${this.port}/${this.bucketName}/${fileName}`;
+    return `${this.url}:${this.port}/${this.bucketName}/${path}`;
   }
 
   async delete(objetName: string) {
     await this.client.removeObjects(this.bucketName, [objetName])
       .catch(err => {
-        throw new IntegrationError('Failed to delete file ' + err.stack);
+        throw new IntegrationError('Failed to delete file ' + err.message);
       });
   }
 }

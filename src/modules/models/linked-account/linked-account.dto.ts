@@ -1,7 +1,7 @@
 import { IsString, IsEnum, IsNotEmpty } from 'class-validator';
 import { AccountType } from 'modules/models/linked-account/linked-account.interface';
 
-export class CreateLinkedAccountDTO {
+export class CreateLinkedAccountDto {
   @IsEnum(AccountType)
   @IsNotEmpty()
   public readonly type: AccountType;

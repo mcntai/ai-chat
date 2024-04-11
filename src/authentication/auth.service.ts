@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { LoginDto, RegisterResponseDTO } from './dto/auth.dto';
+import { LoginDto, RegisterResponseDto } from './dto/auth.dto';
 import { argumentsAssert } from 'common/errors';
 import { User } from 'modules/models/user/user.entity';
 import { AuthHelper } from './auth.helper';
@@ -22,7 +22,7 @@ export class AuthService {
     return this.authHelper.encode(payload, shouldExpire);
   }
 
-  public async register(): Promise<RegisterResponseDTO> {
+  public async register(): Promise<RegisterResponseDto> {
     const user = new User();
 
     user.coins = DEFAULT_COINS_QTY;

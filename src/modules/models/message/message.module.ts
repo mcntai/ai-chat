@@ -7,17 +7,17 @@ import { MessageController } from 'modules/models/message/message.controller';
 import { CommonModule } from 'modules/common/common.module';
 import { UserModule } from 'modules/models/user/user.module';
 import { ChatModule } from 'modules/models/chat/chat.module';
-import { AiModule } from 'modules/ai/ai.module';
-import { MinioClientModule } from 'providers/fs/minio/minio-client.module';
+import { AiAssistantModule } from 'providers/ai-assistant/ai-assistant.module';
+import { FsModule } from 'providers/fs/fs.module';
 
 @Module({
   imports:     [
     TypeOrmModule.forFeature([Message]),
-    MinioClientModule,
+    FsModule,
     CommonModule,
     UserModule,
     ChatModule,
-    AiModule,
+    AiAssistantModule,
   ],
   controllers: [MessageController],
   providers:   [MessageRepository, MessageService],

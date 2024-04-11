@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator';
 
-export class RegisterResponseDTO {
+export class RegisterResponseDto {
   @IsString()
   public readonly id: string;
 

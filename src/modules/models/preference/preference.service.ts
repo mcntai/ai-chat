@@ -9,7 +9,7 @@ export class PreferenceService {
   constructor(private readonly preferenceRepository: PreferenceRepository) {
   }
 
-  public async getValue(key: string, validationSchemaDTO?): Promise<any> {
+  public async getValue(key: string, validationSchemaDto?): Promise<any> {
     assert(key, 'Preference key is required');
 
     const { value } = await this.preferenceRepository.findOne({
@@ -19,8 +19,8 @@ export class PreferenceService {
 
     assert(value, `Preference.${key} not found`);
 
-    if (validationSchemaDTO) {
-      const payload = validationSchemaDTO.create(value);
+    if (validationSchemaDto) {
+      const payload = validationSchemaDto.create(value);
 
       const errors = await validate(payload);
 

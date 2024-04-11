@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { LinkedAccount } from 'modules/models/linked-account/linked-account.entity';
 import { LinkedAccountRepository } from 'modules/models/linked-account/linked-account.repository';
-import { CreateLinkedAccountDTO } from 'modules/models/linked-account/linked-account.dto';
+import { CreateLinkedAccountDto } from 'modules/models/linked-account/linked-account.dto';
 
 @Injectable()
 export class LinkedAccountService {
@@ -14,7 +14,7 @@ export class LinkedAccountService {
     return this.linkedAccountRepository.findAll({ where: { owner: user } });
   }
 
-  public createLinkedAccount(user, payload: CreateLinkedAccountDTO): Promise<LinkedAccount> {
+  public createLinkedAccount(user, payload: CreateLinkedAccountDto): Promise<LinkedAccount> {
     const { type, identifier } = payload;
 
     return this.linkedAccountRepository.create({

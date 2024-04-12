@@ -1,7 +1,7 @@
 export enum ACTIVE_AI_TYPE {
   TEXT_GENERATOR = 'textGenerator',
   IMAGE_GENERATOR = 'imageGenerator',
-  SCANNER = 'scanner',
+  IMAGE_SCANNER = 'imageScanner',
 }
 
 export enum OPEN_AI_IMAGE_RESOLUTION {

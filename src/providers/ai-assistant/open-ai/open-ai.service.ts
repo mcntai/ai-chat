@@ -4,8 +4,7 @@ import { Message } from 'modules/models/message/message.entity';
 import { AiAssistantInterface } from 'providers/ai-assistant/ai-assistant.interface';
 import { TextExtractorStream } from 'providers/ai-assistant/open-ai/text-extractor-stream';
 import { ChatCompletionChunk } from 'openai/resources/chat/completions';
-import { IntegrationError, InternalServerError } from 'common/errors';
-import { OPEN_AI_IMAGE_RESOLUTION, ACTOR } from 'common/constants/message';
+import { ACTOR } from 'common/constants/message';
 import { countTokensFromString } from 'common/utils/open-ai';
 import { OpenAI } from 'openai';
 import { Stream } from 'openai/streaming';
@@ -49,13 +48,7 @@ const reduceHistory = (messages: Partial<Message>[], model: TiktokenModel, token
 const openAiApiKey = 'secret';
 
 export class OpenAiService implements AiAssistantInterface {
-  private readonly IMAGE_GENERATION_MODEL = 'dall-e-2';
-  private readonly IMAGE_RECOGNITION_MODEL = 'gpt-4-vision-preview';
-  private readonly IMAGE_RECOGNITION_TEXT_TYPE = 'text';
-  private readonly IMAGE_RECOGNITION_IMAGE_URL_TYPE = 'image_url';
-  private readonly DEFAULT_RESPONSE_FORMAT = 'url';
-  private readonly RECOGNITION_MODEL_TOKENS_COUNT = 300;
-  private readonly MIN_HISTORY_LENGTH = 3;
+  private readonly IMAGE_GENERATION_RESPONSE_FORMAT = 'url';
 
   private openai: OpenAI;
 
@@ -67,7 +60,9 @@ export class OpenAiService implements AiAssistantInterface {
     this.openai = new OpenAI({ apiKey: openAiApiKey });
   }
 
-  async communicate(messages: Partial<Message>[], config: any): Promise<Stream<string>> {
+  async communicate(body): Promise<Stream<string>> {
+    const { top_p, temperature, frequency_penalty, presence_penalty, model, max_tokens, messages } = body;
+
     const systemMessage: Partial<Message> = {
       text:  'You are a helpful assistant. Respond in the language of user question.',
       actor: ACTOR.SYSTEM,
@@ -75,10 +70,8 @@ export class OpenAiService implements AiAssistantInterface {
 
     messages.unshift(systemMessage);
 
-    const { top_p, temperature, frequency_penalty, presence_penalty, model, max_tokens } = config;
-
     try {
-      const openaiStream: Stream<ChatCompletionChunk> = await this.openai.chat.completions.create({
+      const stream: Stream<ChatCompletionChunk> = await this.openai.chat.completions.create({
         top_p,
         model,
         max_tokens,
@@ -93,23 +86,25 @@ export class OpenAiService implements AiAssistantInterface {
         })),
       });
 
-      return new TextExtractorStream(openaiStream, chunk => chunk.choices[0]?.delta?.content);
-    } catch (error) {
-      throw new InternalServerError('Streaming failed: ' + error.stack);
+      return new TextExtractorStream(stream, chunk => chunk.choices[0]?.delta?.content);
+    } catch (e) {
+      throw new Error('Failed to generate text via OpenAi: ' + e.message);
     }
   }
 
-  async generateImage(prompt: string, size: OPEN_AI_IMAGE_RESOLUTION, model, variations): Promise<string> {
+  async generateImage(body): Promise<string> {
+    const { model, prompt, size, variations } = body;
+
     const url = await this.openai.images.generate({
       model,
       prompt,
       size,
       n: variations,
 
-      response_format: this.DEFAULT_RESPONSE_FORMAT,
+      response_format: this.IMAGE_GENERATION_RESPONSE_FORMAT,
     })
       .catch(err => {
-        throw new IntegrationError('Failed to generate image via OpenAi: ' + err.message);
+        throw new Error('Failed to generate image via OpenAi: ' + err.message);
       })
       .then(response => response.data?.[0]?.url);
 
@@ -118,25 +113,20 @@ export class OpenAiService implements AiAssistantInterface {
     return url;
   }
 
-  // async recognizeImage(prompt: string, imageUrl: string, pipe: (str: string) => void): Promise<string> {
-  //   const stream = await this.openai.chat.completions.create({
-  //     stream:     true,
-  //     model:      this.IMAGE_RECOGNITION_MODEL,
-  //     max_tokens: this.RECOGNITION_MODEL_TOKENS_COUNT,
-  //
-  //     messages: [
-  //       {
-  //         role:    Actor.USER,
-  //         content: [
-  //           { type: this.IMAGE_RECOGNITION_TEXT_TYPE, text: prompt },
-  //           { type: this.IMAGE_RECOGNITION_IMAGE_URL_TYPE, image_url: { url: imageUrl } },
-  //         ],
-  //       },
-  //     ],
-  //   }).catch(err => {
-  //     throw new IntegrationError('Failed to recognize image via OpenAi: ' + err.stack);
-  //   });
-  //
-  //   return this.handleStream(stream, chunk => chunk.choices[0], pipe);
-  // }
+  async recognizeImage(body): Promise<Stream<string>> {
+    const { model, max_tokens, messages } = body;
+
+    try {
+      const stream = await this.openai.chat.completions.create({
+        model,
+        max_tokens,
+        messages,
+        stream: true,
+      });
+
+      return new TextExtractorStream(stream, chunk => chunk.choices[0]?.delta?.content);
+    } catch (e) {
+      throw new Error('Failed to recognize image via OpenAi: ' + e.stack);
+    }
+  }
 }

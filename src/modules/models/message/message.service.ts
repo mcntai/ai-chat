@@ -6,7 +6,7 @@ import { AiAssistantService } from 'providers/ai-assistant/ai-assistant.service'
 import { ChatService } from 'modules/models/chat/chat.service';
 import { FsService } from 'providers/fs/fs.service';
 import { TextExtractorStream } from 'providers/ai-assistant/open-ai/text-extractor-stream';
-import { ACTIVE_AI_TYPE, ACTOR } from 'common/constants/message';
+import { ACTIVE_AI_TYPE, ACTOR, ATTACHMENT_TYPE } from 'common/constants/message';
 
 @Injectable()
 export class MessageService {
@@ -69,26 +69,18 @@ export class MessageService {
 
     const aiClientHandler = await AiAssistantService.getHandler(ACTIVE_AI_TYPE.TEXT_GENERATOR);
 
-    const stream = await aiClientHandler.process(messages);
+    const stream = await aiClientHandler.process({ messages });
 
     stream.on('end', async aiResponse => {
-      await this.saveMessage(chatId, ACTOR.AI, aiResponse);
-
-      if (!subscribed) {
-        await this.userService.deductUserBalance(user);
-      }
+      await Promise.all([
+        this.saveMessage(chatId, ACTOR.AI, aiResponse),
+        !subscribed && this.userService.deductUserBalance(user),
+      ]);
     });
 
     return stream;
   }
 
-  // 1. логіка перевірки того чи є вже чат айді чи його треба створювати
-  // 2. логіка перевірки того чи в юзера взагалі є кредити на те шоб робити запит(це треба десь у валідацію винести)
-  // 3. логіка збереження повідомлення в базу
-  // 4. логіка виклику сервісу який буде відправляти запит на генерацію картинки
-  // 5. логіка збереження картинки в файлову систему
-  // 6. логіка збереження відповіді в базу (тобто урла на картинку уже з файлової системи)
-  // 7. логіка відправки відповіді користувачу
   public async generateImage(user, payload): Promise<string> {
     const { text, size, subscribed } = payload;
 
@@ -98,7 +90,7 @@ export class MessageService {
 
     const aiClientHandler = await AiAssistantService.getHandler(ACTIVE_AI_TYPE.IMAGE_GENERATOR);
 
-    const aiImageUrl = await aiClientHandler.process({ text, size });
+    const aiImageUrl = await aiClientHandler.process({ prompt: text, size });
 
     const localImageUrl = await this.fileService.upload({
       fileUrl: aiImageUrl,
@@ -108,5 +100,36 @@ export class MessageService {
     await this.saveMessage(chatId, ACTOR.AI, localImageUrl);
 
     return localImageUrl;
+  }
+
+  public async scanImage(user, payload, image): Promise<TextExtractorStream> {
+    const { text, language, subscribed } = payload;
+
+    const chatId = await this.resolveChatId(user, payload.chatId, text || 'What\'s in this image?');
+
+    const localImageUrl = await this.fileService.upload({
+      data:        image.buffer,
+      contentType: image.mimetype,
+      path:        this.composeFilePath(user.id, chatId),
+    });
+
+    await this.saveMessage(chatId, ACTOR.USER, text, localImageUrl, ATTACHMENT_TYPE.IMAGE);
+
+    const aiClientHandler = await AiAssistantService.getHandler(ACTIVE_AI_TYPE.IMAGE_SCANNER);
+
+    const stream = await aiClientHandler.process({
+      imageUrl: localImageUrl,
+      prompt:   text,
+      language,
+    });
+
+    stream.on('end', async aiResponse => {
+      await Promise.all([
+        this.saveMessage(chatId, ACTOR.AI, aiResponse),
+        !subscribed && this.userService.deductUserBalance(user),
+      ]);
+    });
+
+    return stream;
   }
 }

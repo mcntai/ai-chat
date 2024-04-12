@@ -7,5 +7,5 @@ export interface AiAssistantInterface {
 
   generateImage(prompt: string, size: OPEN_AI_IMAGE_RESOLUTION, model, variations): Promise<string>;
 
-  // recognizeImage(input: string, imageUrl: string, pipe: (str: string) => void): Promise<string>;
+  recognizeImage(body: object): Promise<Stream<string>>;
 }

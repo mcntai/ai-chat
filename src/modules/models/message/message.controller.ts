@@ -47,15 +47,22 @@ export class MessageController {
   ): Promise<string> {
     return this.messageService.generateImage(req.user, generateImageDto);
   }
-  //
-  // @Post('image-recognition')
-  // @UseGuards(JwtAuthGuard)
-  // @UseInterceptors(FileInterceptor('attachment'))
-  // public scanImage(
-  //   @Req() req: Request,
-  //   @UploadedFile() attachment: Express.Multer.File,
-  //   @Body(new ValidationPipe({ transform: true })) createMessageDto: ScanImageDto,
-  // ): Promise<void> {
-  //   return this.messageService.recognizeImage(req.user, GenerateImageDto, attachment);
-  // }
+
+  @Post('image-scanner')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('image'))
+  public async scanImage(
+    @Req() req: Request,
+    @Res() res: Response,
+    @UploadedFile() image: Express.Multer.File,
+    @Body(new ValidationPipe({ transform: true })) scanImageDto: ScanImageDto,
+  ): Promise<void> {
+    const stream = await this.messageService.scanImage(req.user, scanImageDto, image);
+
+    for await (const chunk of stream) {
+      res.write(chunk);
+    }
+
+    res.end();
+  }
 }

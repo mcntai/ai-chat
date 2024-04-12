@@ -22,6 +22,7 @@ export class AiAssistantService {
     const config = {
       textGenerator:  'OpenAiTextGenerator',
       imageGenerator: 'OpenAiImageGenerator',
+      imageScanner:   'OpenAiImageScanner',
     };
 
     const handlerName = config[aiType];

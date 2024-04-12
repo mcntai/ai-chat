@@ -13,7 +13,7 @@ export class Message extends Base implements MessageInterface {
   @Column({ type: 'enum', enum: ACTOR })
   actor: ACTOR;
 
-  @Column({ length: 255, nullable: true })
+  @Column({ length: 400, nullable: true })
   attachment: string;
 
   @Index()

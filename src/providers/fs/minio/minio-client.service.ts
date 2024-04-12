@@ -31,9 +31,7 @@ export class MinioClientService {
   public async upload(params: UploadParams): Promise<string> {
     const { data, path, contentType } = params;
 
-    const metaData = { 'Content-Type': contentType };
-
-    await this.client.putObject(this.bucketName, path, data, metaData)
+    await this.client.putObject(this.bucketName, path, data, { 'Content-Type': contentType })
       .catch(err => {
         throw new IntegrationError('Failed to upload file ' + err.message);
       });

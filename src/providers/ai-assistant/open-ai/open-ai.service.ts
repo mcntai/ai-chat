@@ -126,7 +126,7 @@ export class OpenAiService implements AiAssistantInterface {
 
       return new TextExtractorStream(stream, chunk => chunk.choices[0]?.delta?.content);
     } catch (e) {
-      throw new Error('Failed to recognize image via OpenAi: ' + e.stack);
+      throw new Error('Failed to recognize image via OpenAi: ' + e.message);
     }
   }
 }

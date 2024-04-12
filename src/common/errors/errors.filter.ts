@@ -17,7 +17,7 @@ export class GlobalErrorFilter implements ExceptionFilter {
       error = error.getResponse();
     } else {
       statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-      error = new InternalServerErrorException();
+      error = new InternalServerErrorException().getResponse();
     }
 
     return response.status(statusCode).send(error);

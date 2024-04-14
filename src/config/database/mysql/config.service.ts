@@ -1,11 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-/**
- * Service dealing with mysql config operations.
- *
- * @class
- */
 @Injectable()
 export class MysqlConfigService {
   constructor(private configService: ConfigService) {

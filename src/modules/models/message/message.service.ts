@@ -97,7 +97,10 @@ export class MessageService {
       path:    this.composeFilePath(user.id, chatId),
     });
 
-    await this.saveMessage(chatId, ACTOR.AI, localImageUrl);
+    await Promise.all([
+      this.saveMessage(chatId, ACTOR.AI, localImageUrl),
+      !subscribed && this.userService.deductUserBalance(user),
+    ]);
 
     return localImageUrl;
   }

@@ -1,11 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-/**
- * Service dealing with app config operations.
- *
- * @class
- */
 @Injectable()
 export class AppConfigService {
   constructor(private configService: ConfigService) {
@@ -29,9 +24,5 @@ export class AppConfigService {
 
   get jwtExpiresIn(): string {
     return this.configService.get<string>('app.jwtExpiresIn');
-  }
-
-  get openAiApiKey(): string {
-    return this.configService.get<string>('app.openAiApiKey');
   }
 }

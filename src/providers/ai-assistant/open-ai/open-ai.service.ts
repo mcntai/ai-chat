@@ -1,5 +1,3 @@
-import { Inject } from '@nestjs/common';
-import { AppConfigService } from 'config/app/config.service';
 import { Message } from 'modules/models/message/message.entity';
 import { AiAssistantInterface } from 'providers/ai-assistant/ai-assistant.interface';
 import { TextExtractorStream } from 'providers/ai-assistant/open-ai/text-extractor-stream';
@@ -45,19 +43,13 @@ const reduceHistory = (messages: Partial<Message>[], model: TiktokenModel, token
   return messages;
 };
 
-const openAiApiKey = 'secret';
-
 export class OpenAiService implements AiAssistantInterface {
   private readonly IMAGE_GENERATION_RESPONSE_FORMAT = 'url';
 
   private openai: OpenAI;
 
-  @Inject(AppConfigService)
-  private readonly configService: AppConfigService;
-
   constructor() {
-    // this.openai = new OpenAI({ apiKey: this.configService.openAiApiKey });
-    this.openai = new OpenAI({ apiKey: openAiApiKey });
+    this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   }
 
   async communicate(body): Promise<Stream<string>> {

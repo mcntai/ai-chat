@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { MinioClientService } from 'providers/fs/minio/minio-client.service';
 import { downloadFile, getContentTypeByExtension, getContentTypeByUrl } from 'common/utils/http';
+import { getExtensionByContentType } from 'common/utils/http';
 import * as assert from 'assert';
 import { Extension } from 'common/utils/fs';
 
@@ -44,7 +45,9 @@ export class FsService {
 
     const contentType = params.contentType || this.resolveContentType(params);
 
-    return this.saveFile(data, path, contentType);
+    const extension = getExtensionByContentType(contentType);
+
+    return this.saveFile(data, `${path}${extension}`, contentType);
   }
 
   delete(objetName: string) {

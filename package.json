@@ -33,6 +33,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "mysql2": "^3.9.1",
+    "nanoid": "^3.0.0",
     "nestjs-minio-client": "^2.2.0",
     "openai": "^4.28.4",
     "passport": "^0.7.0",

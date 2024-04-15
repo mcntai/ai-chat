@@ -7,6 +7,7 @@ import { ChatService } from 'modules/models/chat/chat.service';
 import { FsService } from 'providers/fs/fs.service';
 import { TextExtractorStream } from 'providers/ai-assistant/open-ai/text-extractor-stream';
 import { ACTIVE_AI_TYPE, ACTOR, ATTACHMENT_TYPE } from 'common/constants/message';
+import { nanoid } from 'nanoid';
 
 @Injectable()
 export class MessageService {
@@ -45,7 +46,7 @@ export class MessageService {
   }
 
   private composeFilePath(userId: string, chatId: string): string {
-    return `${userId}/${chatId}/${Date.now()}`;
+    return `${userId}/${chatId}/${nanoid(4)}`;
   }
 
   private async saveMessage(

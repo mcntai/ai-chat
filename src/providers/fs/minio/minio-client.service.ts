@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MinioService } from 'nestjs-minio-client';
 import { IntegrationError } from 'common/errors';
 import { MinioConfigService } from 'config/fs/minio/config.service';
+import { toArray } from 'common/utils/array';
 
 interface UploadParams {
   data: Buffer;
@@ -39,10 +40,26 @@ export class MinioClientService {
     return `${this.url}:${this.port}/${this.bucketName}/${path}`;
   }
 
-  async delete(objetName: string) {
-    await this.client.removeObjects(this.bucketName, [objetName])
+  async delete(objetName: string | string[]) {
+    await this.client.removeObjects(this.bucketName, toArray(objetName))
       .catch(err => {
         throw new IntegrationError('Failed to delete file ' + err.message);
       });
+  }
+
+  async listObjects(prefix: string): Promise<string[]> {
+    const stream = await this.client.listObjectsV2(this.bucketName, prefix, true);
+
+    const names = [];
+
+    for await (const chunk of stream) {
+      names.push(chunk.name);
+    }
+
+    stream.on('error', err => {
+      throw new IntegrationError('Failed to list objects ' + err.message);
+    });
+
+    return names;
   }
 }

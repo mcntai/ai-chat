@@ -50,7 +50,11 @@ export class FsService {
     return this.saveFile(data, `${path}${extension}`, contentType);
   }
 
-  delete(objetName: string) {
+  delete(objetName: string | string[]) {
     return this.fsClient.delete(objetName);
+  }
+
+  getFilesNames(prefix: string): Promise<string[]> {
+    return this.fsClient.listObjects(prefix);
   }
 }

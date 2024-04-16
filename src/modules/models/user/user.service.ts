@@ -5,12 +5,14 @@ import { LinkedAccount } from 'modules/models/linked-account/linked-account.enti
 import { Chat } from 'modules/models/chat/chat.entity';
 import { Message } from 'modules/models/message/message.entity';
 import { DataSource, QueryRunner } from 'typeorm';
+import { FsService } from 'providers/fs/fs.service';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
     private dataSource: DataSource,
+    private fsService: FsService,
   ) {
   }
 
@@ -63,6 +65,12 @@ export class UserService {
     return queryRunner;
   }
 
+  private async deleteUserFiles(userId): Promise<void> {
+    const files = await this.fsService.getFilesNames(userId);
+
+    await this.fsService.delete(files);
+  }
+
   public getUserBalance(user): Promise<number> {
     return this.userRepository.getUserBalance(user.id);
   }
@@ -79,15 +87,15 @@ export class UserService {
 
     await this.invokeTransaction(queryRunner);
 
-    //TODO: delete files related to user
+    await this.deleteUserFiles(user.id);
   }
 
   public async deleteUserData(user): Promise<void> {
-    const queryRunner = await this.prepareUserDataRemovalTransaction(user);
+    // const queryRunner = await this.prepareUserDataRemovalTransaction(user);
 
-    await this.invokeTransaction(queryRunner);
+    // await this.invokeTransaction(queryRunner);
 
-    //TODO: delete files related to user
+    await this.deleteUserFiles(user.id);
   }
 
   public deductUserBalance(user): Promise<void> {
@@ -99,10 +107,4 @@ export class UserService {
   public getUserById(id: string): Promise<User> {
     return this.userRepository.findById(id);
   }
-
-  // public async userSubscribedOrHaveBalance(user): Promise<void> {
-  //   const { subscribed, coins, paidCoins } = await this.userRepository.findById(user.id);
-  //
-  //   return subscribed || Boolean(Number(coins + paidCoins));
-  // }
 }

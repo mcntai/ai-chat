@@ -93,7 +93,7 @@ export class UserService {
   public deductUserBalance(user): Promise<void> {
     const dbUser = this.userRepository.findById(user.id);
 
-    return this.userRepository.deductUserBalance(user.id);
+    return this.userRepository.deductUserBalance(user);
   }
 
   public getUserById(id: string): Promise<User> {

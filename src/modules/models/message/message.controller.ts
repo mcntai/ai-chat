@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, Query, Body, Res } from '@nestjs/common';
+import { Controller, Get, Post, Req, Query, Body, Res, ParseFilePipeBuilder, HttpStatus } from '@nestjs/common';
 import { UseGuards, ValidationPipe, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MessageService } from 'modules/models/message/message.service';
@@ -10,6 +10,9 @@ import { ScanImageDto } from './dtos/scan-image.dto';
 import { GuardParams } from 'common/decorators/metadata';
 import { OwnershipGuard } from 'common/guards/ownership.guard';
 import { GenerateImageDto } from 'modules/models/message/dtos/generate-image.dto';
+import { BalanceCheckGuard } from 'common/guards/balance-check.guard';
+
+const FIVE_MB = 5 * 1024 * 1024;
 
 @Controller('messages')
 @GuardParams({ repository: 'ChatRepository', column: 'id', reqIdentifier: 'chatId' })
@@ -24,7 +27,7 @@ export class MessageController {
   }
 
   @Post('text-completion')
-  @UseGuards(JwtAuthGuard, OwnershipGuard)
+  @UseGuards(JwtAuthGuard, OwnershipGuard, BalanceCheckGuard)
   public async generateText(
     @Req() req: Request,
     @Res() res: Response,
@@ -40,7 +43,7 @@ export class MessageController {
   }
 
   @Post('image-generation')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, OwnershipGuard, BalanceCheckGuard)
   public generateImage(
     @Req() req: Request,
     @Body(new ValidationPipe({ transform: true })) generateImageDto: GenerateImageDto,
@@ -49,12 +52,17 @@ export class MessageController {
   }
 
   @Post('image-scanner')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, OwnershipGuard, BalanceCheckGuard)
   @UseInterceptors(FileInterceptor('image'))
   public async scanImage(
     @Req() req: Request,
     @Res() res: Response,
-    @UploadedFile() image: Express.Multer.File,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({ fileType: /(jpg|jpeg|png|webp)$/ })
+        .addMaxSizeValidator({ maxSize: FIVE_MB, message: 'File can not be greater than 5 mb' })
+        .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
+    ) image: Express.Multer.File,
     @Body(new ValidationPipe({ transform: true })) scanImageDto: ScanImageDto,
   ): Promise<void> {
     const stream = await this.messageService.scanImage(req.user, scanImageDto, image);

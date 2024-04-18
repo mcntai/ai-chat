@@ -3,7 +3,6 @@ import { UserRepository } from 'modules/models/user/user.repository';
 import { User } from 'modules/models/user/user.entity';
 import { LinkedAccount } from 'modules/models/linked-account/linked-account.entity';
 import { Chat } from 'modules/models/chat/chat.entity';
-import { Message } from 'modules/models/message/message.entity';
 import { DataSource, QueryRunner } from 'typeorm';
 import { FsService } from 'providers/fs/fs.service';
 
@@ -22,45 +21,24 @@ export class UserService {
     } catch (err) {
       await queryRunner.rollbackTransaction();
 
-      throw new Error('transaction failed: ' + err.message);
+      throw new Error('Transaction failed: ' + err.message);
     } finally {
       await queryRunner.release();
     }
   }
 
-  private async prepareUserDataRemovalTransaction(userId): Promise<QueryRunner> {
+  private async prepareUserDataRemovalTransaction(userId: string): Promise<QueryRunner> {
     const queryRunner = this.dataSource.createQueryRunner();
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
-    await queryRunner.manager
-      .createQueryBuilder()
-      .delete()
-      .from(LinkedAccount)
-      .where({ owner: userId })
-      .execute();
+    await queryRunner.manager.delete(LinkedAccount, { owner: userId });
 
     await queryRunner.manager
-      .createQueryBuilder()
-      .delete()
-      .from(Message)
-      .where('chatId IN (:chatIds)', {
-        chatIds: queryRunner.manager
-                   .createQueryBuilder()
-                   .select('chat.id')
-                   .from(Chat, 'chat')
-                   .where('chat.ownerId = :userId', { userId })
-                   .getQuery(),
-      })
-      .execute();
+      .query(`DELETE FROM Message WHERE chatId IN (SELECT id FROM Chat WHERE ownerId = '${userId}')`);
 
-    await queryRunner.manager
-      .createQueryBuilder()
-      .delete()
-      .from(Chat)
-      .where('ownerId = :userId', { userId })
-      .execute();
+    await queryRunner.manager.delete(Chat, { owner: userId });
 
     return queryRunner;
   }
@@ -76,14 +54,9 @@ export class UserService {
   }
 
   public async deleteUser(user): Promise<void> {
-    const queryRunner = await this.prepareUserDataRemovalTransaction(user);
+    const queryRunner = await this.prepareUserDataRemovalTransaction(user.id);
 
-    await queryRunner.manager
-      .createQueryBuilder()
-      .delete()
-      .from(User)
-      .where('id = :userId', { userId: user.id })
-      .execute();
+    await queryRunner.manager.delete(User, { id: user.id });
 
     await this.invokeTransaction(queryRunner);
 
@@ -91,16 +64,14 @@ export class UserService {
   }
 
   public async deleteUserData(user): Promise<void> {
-    // const queryRunner = await this.prepareUserDataRemovalTransaction(user);
+    const queryRunner = await this.prepareUserDataRemovalTransaction(user.id);
 
-    // await this.invokeTransaction(queryRunner);
+    await this.invokeTransaction(queryRunner);
 
     await this.deleteUserFiles(user.id);
   }
 
   public deductUserBalance(user): Promise<void> {
-    const dbUser = this.userRepository.findById(user.id);
-
     return this.userRepository.deductUserBalance(user);
   }
 

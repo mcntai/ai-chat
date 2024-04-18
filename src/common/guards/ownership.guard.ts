@@ -29,14 +29,16 @@ export class OwnershipGuard implements CanActivate {
       || queryParams[guardParams.reqIdentifier]
       || bodyParams[guardParams.reqIdentifier];
 
-    const column: string = guardParams.column;
-    const whereClause: Record<string, any> = guardParams.whereClause || {};
+    if (recordId) {
+      const column: string = guardParams.column;
+      const whereClause: Record<string, any> = guardParams.whereClause || {};
 
-    const recordExists = await this.commonService.entityExists(
-      guardParams.repository,
-      { [column]: recordId, 'owner.id': userId, ...(whereClause) });
+      const recordExists = await this.commonService.entityExists(
+        guardParams.repository,
+        { [column]: recordId, 'owner.id': userId, ...(whereClause) });
 
-    argumentsAssert(recordExists, `Record with such ${guardParams.reqIdentifier} was not found`);
+      argumentsAssert(recordExists, `Record with such ${guardParams.reqIdentifier} was not found`);
+    }
 
     return true;
   }

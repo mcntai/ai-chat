@@ -17,11 +17,11 @@ export class LinkedAccountService {
   public createLinkedAccount(user, payload: CreateLinkedAccountDto): Promise<LinkedAccount> {
     const { type, identifier } = payload;
 
-    return this.linkedAccountRepository.create({
-      accountType: type,
-      externalId:  identifier,
-      owner:       user,
-    });
+    const criteria = { accountType: type, externalId: identifier };
+
+    const existingAccount = this.linkedAccountRepository.findOne({ where: criteria });
+
+    return existingAccount || this.linkedAccountRepository.create({ ...criteria, owner: user });
   }
 
   public async deleteLinkedAccount(accountId: string): Promise<void> {

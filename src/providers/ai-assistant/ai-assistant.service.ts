@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Keys } from 'modules/models/preference/preference.entity';
-import { AiHandlersConfigSchema } from 'modules/models/preference/preference.dto';
 import { PreferenceService } from 'modules/models/preference/preference.service';
 import { ACTIVE_AI_TYPE } from 'common/constants/message';
 import * as assert from 'assert';
+import { object, string, array } from 'sito';
 
 interface AiServiceHandler {
   process(data: any): any;
@@ -11,21 +11,32 @@ interface AiServiceHandler {
 
 @Injectable()
 export class AiAssistantService {
-  constructor(
-    private readonly preferenceService: PreferenceService,
-  ) {
+  constructor(private readonly preferenceService: PreferenceService) {
   }
 
-  public static async getHandler(aiType: ACTIVE_AI_TYPE): Promise<AiServiceHandler> {
-    // const config = await this.preferenceService.getValue(Keys.AI_HANDLERS, AiHandlersConfigSchema);
+  public async getHandler(aiType: ACTIVE_AI_TYPE): Promise<AiServiceHandler> {
+    const commonActiveValidator = string().notEmpty().required();
+    const commonAllValidator = array(string().notEmpty()).notEmpty().required();
 
-    const config = {
-      textGenerator:  'OpenAiTextGenerator',
-      imageGenerator: 'OpenAiImageGenerator',
-      imageScanner:   'OpenAiImageScanner',
-    };
+    const config = await this.preferenceService.getValue(Keys.AI_HANDLERS, object({
+        active: object({
+          textGenerator:  commonActiveValidator,
+          imageGenerator: commonActiveValidator,
+          imageScanner:   commonActiveValidator,
+        }).notEmpty(),
 
-    const handlerName = config[aiType];
+        all: object({
+          textGenerator:  commonAllValidator,
+          imageGenerator: commonAllValidator,
+          imageScanner:   commonAllValidator,
+        }).notEmpty(),
+      })
+        .required()
+        .notEmpty()
+        .strict(),
+    );
+
+    const handlerName = config.active[aiType];
 
     assert(handlerName, `No handler found for ${aiType}`);
 

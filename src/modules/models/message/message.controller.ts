@@ -5,7 +5,7 @@ import { MessageService } from 'modules/models/message/message.service';
 import { JwtAuthGuard } from 'authentication/auth.guard';
 import { Message } from 'modules/models/message/message.entity';
 import { Request, Response, Express } from 'express';
-import { CreateMessageBaseDto } from './dtos/create-message-base.dto';
+import { CreateMessageBaseDto, createMsgValidationSchema } from './dtos/create-message-base.dto';
 import { ScanImageDto } from './dtos/scan-image.dto';
 import { GuardParams } from 'common/decorators/metadata';
 import { OwnershipGuard } from 'common/guards/ownership.guard';
@@ -31,8 +31,10 @@ export class MessageController {
   public async generateText(
     @Req() req: Request,
     @Res() res: Response,
-    @Body(new ValidationPipe({ transform: true })) textCompletionDto: CreateMessageBaseDto,
+    @Body() textCompletionDto: CreateMessageBaseDto,
   ): Promise<void> {
+    await createMsgValidationSchema.assert(textCompletionDto);
+
     const stream = await this.messageService.generateText(req.user, textCompletionDto);
 
     for await (const chunk of stream) {

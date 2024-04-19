@@ -5007,6 +5007,11 @@ sisteransi@^1.0.5:
   resolved "https://registry.yarnpkg.com/sisteransi/-/sisteransi-1.0.5.tgz#134d681297756437cc05ca01370d3a7a571075ed"
   integrity sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==
 
+sito@^1.4.6:
+  version "1.4.6"
+  resolved "https://registry.npmjs.org/sito/-/sito-1.4.6.tgz#f0738366a62bf2bdb10f6eb1d28e613334744bb1"
+  integrity sha512-6TeZysEvgXvBmh4ZjhLnaLVED60BLnMcNv6NX+RxVS26JFDl7i3ypfubzQLwQwu/FJ2fCnTTGP3eKqy7ev++hQ==
+
 slash@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/slash/-/slash-3.0.0.tgz#6539be870c165adbd5240220dbe361f1bc4d4634"

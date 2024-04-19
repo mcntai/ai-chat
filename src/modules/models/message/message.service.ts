@@ -68,7 +68,7 @@ export class MessageService {
 
     const messages = await this.getMessagesHistory(chatId);
 
-    const aiClientHandler = await AiAssistantService.getHandler(ACTIVE_AI_TYPE.TEXT_GENERATOR);
+    const aiClientHandler = await this.aiService.getHandler(ACTIVE_AI_TYPE.TEXT_GENERATOR);
 
     const stream = await aiClientHandler.process({ messages });
 
@@ -89,7 +89,7 @@ export class MessageService {
 
     await this.saveMessage(chatId, ACTOR.USER, text);
 
-    const aiClientHandler = await AiAssistantService.getHandler(ACTIVE_AI_TYPE.IMAGE_GENERATOR);
+    const aiClientHandler = await this.aiService.getHandler(ACTIVE_AI_TYPE.IMAGE_GENERATOR);
 
     const aiImageUrl = await aiClientHandler.process({ prompt: text, size });
 
@@ -119,7 +119,7 @@ export class MessageService {
 
     await this.saveMessage(chatId, ACTOR.USER, text, localImageUrl, ATTACHMENT_TYPE.IMAGE);
 
-    const aiClientHandler = await AiAssistantService.getHandler(ACTIVE_AI_TYPE.IMAGE_SCANNER);
+    const aiClientHandler = await this.aiService.getHandler(ACTIVE_AI_TYPE.IMAGE_SCANNER);
 
     const stream = await aiClientHandler.process({
       imageUrl: localImageUrl,

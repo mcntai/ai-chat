@@ -1,5 +1,7 @@
-import { ExceptionFilter, Catch, HttpException, ArgumentsHost, InternalServerErrorException } from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost } from '@nestjs/common';
 import { HttpStatus, Logger } from '@nestjs/common';
+import { APIError, InternalServerError } from 'common/errors';
+import { pick } from 'common/utils/object';
 
 const errorLogger = new Logger('ErrorLogger');
 
@@ -8,18 +10,21 @@ export class GlobalErrorFilter implements ExceptionFilter {
   catch(error: any, host: ArgumentsHost) {
     const response = host.switchToHttp().getResponse();
 
-    errorLogger.error(error?.stack || error);
-
-    let statusCode;
-
-    if (error instanceof HttpException) {
-      statusCode = error.getStatus();
-      error = error.getResponse();
-    } else {
-      statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-      error = new InternalServerErrorException().getResponse();
+    if (!(error instanceof APIError)) {
+      error = new InternalServerError('[UNHANDLED ERROR] ' + JSON.stringify(error?.stack || error));
     }
 
-    return response.status(statusCode).send(error);
+    errorLogger.error(error?.stack || error);
+
+    if (error instanceof InternalServerError) {
+      error.message = InternalServerError.USER_MESSAGE;
+    }
+
+    const statusCode = error.getStatus() || HttpStatus.BAD_REQUEST;
+
+    return response.status(statusCode).send({
+      statusCode,
+      ...pick(error, ['message', 'path', 'key']),
+    });
   }
 }

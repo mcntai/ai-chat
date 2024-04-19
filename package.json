@@ -40,6 +40,7 @@
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
+    "sito": "^1.4.6",
     "tiktoken": "^1.0.13",
     "typeorm": "0.3.17"
   },

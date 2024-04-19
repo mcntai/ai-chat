@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsString, IsNotEmpty } from 'class-validator';
 
 export class RegisterResponseDto {
   @IsString()
@@ -13,5 +13,6 @@ export class RegisterResponseDto {
 
 export class LoginDto {
   @IsString()
+  @IsNotEmpty()
   public readonly authToken: string;
 }

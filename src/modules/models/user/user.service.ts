@@ -74,8 +74,4 @@ export class UserService {
   public deductUserBalance(user): Promise<void> {
     return this.userRepository.deductUserBalance(user);
   }
-
-  public getUserById(id: string): Promise<User> {
-    return this.userRepository.findById(id);
-  }
 }

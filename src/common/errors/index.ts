@@ -35,41 +35,29 @@ export class ValidationError extends APIError {
   }
 }
 
-export class InvalidArgumentsError extends HttpException {
+export class InvalidArgumentsError extends APIError {
   constructor(message) {
-    super({
-      statusCode: HttpStatus.BAD_REQUEST,
-      message,
-    }, HttpStatus.BAD_REQUEST);
+    super(message, HttpStatus.BAD_REQUEST);
   }
 }
 
-export class InternalServerError extends HttpException {
+export class InternalServerError extends APIError {
   public static USER_MESSAGE: string;
 
   constructor(message: string) {
-    super({
-      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-      message,
-    }, HttpStatus.INTERNAL_SERVER_ERROR);
+    super(message, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }
 
-export class UnAuthorizedError extends HttpException {
+export class UnAuthorizedError extends APIError {
   constructor(message: string) {
-    super({
-      statusCode: HttpStatus.UNAUTHORIZED,
-      message,
-    }, HttpStatus.UNAUTHORIZED);
+    super(message, HttpStatus.UNAUTHORIZED);
   }
 }
 
-export class IntegrationError extends HttpException {
+export class IntegrationError extends APIError {
   constructor(message: string) {
-    super({
-      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-      message,
-    }, HttpStatus.INTERNAL_SERVER_ERROR);
+    super(message, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }
 

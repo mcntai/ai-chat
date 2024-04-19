@@ -121,4 +121,8 @@ export class OpenAiService implements AiAssistantInterface {
       throw new Error('Failed to recognize image via OpenAi: ' + e.message);
     }
   }
+
+  getConfig(): null {
+    return null;
+  }
 }

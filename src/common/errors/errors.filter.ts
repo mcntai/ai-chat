@@ -11,7 +11,7 @@ export class GlobalErrorFilter implements ExceptionFilter {
     const response = host.switchToHttp().getResponse();
 
     if (!(error instanceof APIError)) {
-      error = new InternalServerError('[UNHANDLED ERROR] ' + JSON.stringify(error?.stack || error));
+      error = new InternalServerError('[UNHANDLED ERROR] ' + JSON.stringify(error?.message || error));
     }
 
     errorLogger.error(error?.stack || error);

@@ -11,6 +11,8 @@ import { GuardParams } from 'common/decorators/metadata';
 import { OwnershipGuard } from 'common/guards/ownership.guard';
 import { GenerateImageDto } from 'modules/models/message/dtos/generate-image.dto';
 import { BalanceCheckGuard } from 'common/guards/balance-check.guard';
+import { ACTIVE_AI_TYPE } from 'common/constants/message';
+import { activeAssistantConfigSchema } from 'modules/models/message/schemas';
 
 const FIVE_MB = 5 * 1024 * 1024;
 
@@ -74,5 +76,13 @@ export class MessageController {
     }
 
     res.end();
+  }
+
+  @Get('active-handler-config')
+  @UseGuards(JwtAuthGuard)
+  public async getActiveHandlerConfig(@Query('aiType') aiType: ACTIVE_AI_TYPE): Promise<any> {
+    await activeAssistantConfigSchema.assert({ aiType });
+
+    return this.messageService.getActiveHandlerConfig(aiType);
   }
 }

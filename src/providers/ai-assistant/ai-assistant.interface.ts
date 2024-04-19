@@ -8,4 +8,6 @@ export interface AiAssistantInterface {
   generateImage(prompt: string, size: OPEN_AI_IMAGE_RESOLUTION, model, variations): Promise<string>;
 
   recognizeImage(body: object): Promise<Stream<string>>;
+
+  getConfig(): any;
 }

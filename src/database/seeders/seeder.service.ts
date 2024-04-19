@@ -23,12 +23,12 @@ export class SeederService {
 
   async seedPreferences(): Promise<void> {
     const configDto = {
-      active: {
+      active:              {
         textGenerator:  'OpenAiTextGenerator',
         imageGenerator: 'OpenAiImageGenerator',
         imageScanner:   'OpenAiImageScanner',
       },
-      all:    {
+      availableAssistants: {
         textGenerator:  ['OpenAiTextGenerator'],
         imageGenerator: ['OpenAiImageGenerator'],
         imageScanner:   ['OpenAiImageScanner'],

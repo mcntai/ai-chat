@@ -8,6 +8,7 @@ import { FsService } from 'providers/fs/fs.service';
 import { TextExtractorStream } from 'providers/ai-assistant/open-ai/text-extractor-stream';
 import { ACTIVE_AI_TYPE, ACTOR, ATTACHMENT_TYPE } from 'common/constants/message';
 import { nanoid } from 'nanoid';
+import * as assert from 'assert';
 
 @Injectable()
 export class MessageService {
@@ -135,5 +136,13 @@ export class MessageService {
     });
 
     return stream;
+  }
+
+  public async getActiveHandlerConfig(aiType: ACTIVE_AI_TYPE): Promise<any> {
+    assert(Object.values(ACTIVE_AI_TYPE).includes(aiType), 'unknown aiType provided');
+
+    const handler = await this.aiService.getHandler(aiType);
+
+    return handler.getConfig();
   }
 }

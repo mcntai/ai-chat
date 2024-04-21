@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, Index } from 'typeorm';
+import { Entity, Column, ManyToOne } from 'typeorm';
 import { Chat } from 'modules/models/chat/chat.entity';
 import { Base } from 'modules/models/base/base.entity';
 import { MessageInterface } from './message.interface';
@@ -9,14 +9,12 @@ export class Message extends Base implements MessageInterface {
   @Column({ type: 'text', nullable: true })
   text: string;
 
-  @Index()
   @Column({ type: 'enum', enum: ACTOR })
   actor: ACTOR;
 
   @Column({ length: 400, nullable: true })
   attachment: string;
 
-  @Index()
   @Column({ type: 'enum', enum: ATTACHMENT_TYPE, nullable: true })
   attachmentType: ATTACHMENT_TYPE;
 

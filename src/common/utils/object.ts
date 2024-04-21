@@ -1,11 +1,11 @@
-export const invert = object => {
+export const invert = (object): any => {
   return Object.keys(object).reduce((resultObject, key) => ({
     ...resultObject,
     [object[key]]: key,
   }), {});
 };
 
-export const pick = (object, props) => {
+export const pick = (object, props): any => {
   if (!props && object instanceof Array) {
     props = object;
 

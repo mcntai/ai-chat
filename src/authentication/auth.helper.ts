@@ -21,7 +21,7 @@ export class AuthHelper {
     this.expiresIn = jwtExpiresIn;
   }
 
-  encode(payload: any, shouldExpire = false): string {
+  encode(payload: any, { shouldExpire = false } = {}): string {
     assert(payload, 'payload is required');
 
     const signOptions = shouldExpire ? { expiresIn: this.expiresIn } : {};

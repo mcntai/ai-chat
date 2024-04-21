@@ -100,7 +100,7 @@ export class MessageService {
     });
 
     await Promise.all([
-      this.saveMessage(chatId, ACTOR.AI, localImageUrl),
+      this.saveMessage(chatId, ACTOR.AI, localImageUrl, ATTACHMENT_TYPE.IMAGE),
       !subscribed && this.userService.deductUserBalance(user),
     ]);
 

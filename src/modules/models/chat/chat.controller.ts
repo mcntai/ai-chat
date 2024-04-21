@@ -1,5 +1,5 @@
 import { ChatService } from 'modules/models/chat/chat.service';
-import { Controller, Req, Get, Put, Delete, Param, Body, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Controller, Req, Get, Put, Delete, Param, Body, UseGuards, ValidationPipe, Query } from '@nestjs/common';
 import { Chat } from 'modules/models/chat/chat.entity';
 import { Request } from 'express';
 import { JwtAuthGuard } from 'authentication/auth.guard';
@@ -15,8 +15,20 @@ export class ChatController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  public getChats(@Req() req: Request): Promise<Chat[]> {
-    return this.chatService.getChats(req.user);
+  public getChats(
+    @Req() req: Request,
+    @Query('archived') archived: boolean,
+  ): Promise<Chat[]> {
+    return this.chatService.getChats(req.user, archived);
+  }
+
+  @Get(':id')
+  @UseGuards(JwtAuthGuard, OwnershipGuard)
+  public getChat(
+    @Req() req: Request,
+    @Param('id') id: string,
+  ): Promise<Chat> {
+    return this.chatService.getChatByCriteria({ id });
   }
 
   @Put(':id')

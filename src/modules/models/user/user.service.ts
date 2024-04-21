@@ -49,8 +49,13 @@ export class UserService {
     await this.fsService.delete(files);
   }
 
-  public getUserBalance(user): Promise<number> {
-    return this.userRepository.getUserBalance(user.id);
+  public async getUserBalance(user): Promise<number> {
+    const dbUser = await this.userRepository.findById(user.id);
+
+    const coins = dbUser.coins || 0;
+    const paidCoins = dbUser.paidCoins || 0;
+
+    return Number(coins + paidCoins);
   }
 
   public async deleteUser(user): Promise<void> {
@@ -71,7 +76,7 @@ export class UserService {
     await this.deleteUserFiles(user.id);
   }
 
-  public deductUserBalance(user): Promise<void> {
-    return this.userRepository.deductUserBalance(user);
+  public async deductUserBalance(user): Promise<void> {
+    await this.userRepository.update(user);
   }
 }

@@ -1,4 +1,4 @@
-import { IsBoolean, IsOptional } from 'class-validator';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class UpdateChatDto {
   @IsBoolean()
@@ -8,4 +8,8 @@ export class UpdateChatDto {
   @IsBoolean()
   @IsOptional()
   public readonly pinned: boolean;
+
+  @IsOptional()
+  @IsString()
+  public readonly name: string;
 }

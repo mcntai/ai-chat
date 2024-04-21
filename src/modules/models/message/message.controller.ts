@@ -14,7 +14,8 @@ import { BalanceCheckGuard } from 'common/guards/balance-check.guard';
 import { ACTIVE_AI_TYPE } from 'common/constants/message';
 import { activeAssistantConfigSchema } from 'modules/models/message/schemas';
 
-const FIVE_MB = 5 * 1024 * 1024;
+const TWENTY_MB = 20 * 1024 * 1024;
+const TWENTY_MB_ERROR = 'File can not be greater than 20 mb';
 
 @Controller('messages')
 @GuardParams({ repository: 'ChatRepository', column: 'id', reqIdentifier: 'chatId' })
@@ -24,7 +25,10 @@ export class MessageController {
 
   @Get()
   @UseGuards(JwtAuthGuard, OwnershipGuard)
-  public getMessages(@Req() req: Request, @Query('chatId') chatId: string): Promise<Message[]> {
+  public getMessages(
+    @Req() req: Request,
+    @Query('chatId') chatId: string,
+  ): Promise<Message[]> {
     return this.messageService.getMessages(chatId);
   }
 
@@ -63,8 +67,8 @@ export class MessageController {
     @Res() res: Response,
     @UploadedFile(
       new ParseFilePipeBuilder()
-        .addFileTypeValidator({ fileType: /(jpg|jpeg|png|webp)$/ })
-        .addMaxSizeValidator({ maxSize: FIVE_MB, message: 'File can not be greater than 5 mb' })
+        .addFileTypeValidator({ fileType: /(jpg|jpeg|png|gif|bmp|webp|heif|heic)$/ })
+        .addMaxSizeValidator({ maxSize: TWENTY_MB, message: TWENTY_MB_ERROR })
         .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
     ) image: Express.Multer.File,
     @Body(new ValidationPipe({ transform: true })) scanImageDto: ScanImageDto,

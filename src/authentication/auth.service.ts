@@ -17,15 +17,16 @@ export class AuthService {
 
   private generateAccessToken(user: User): string {
     const payload = { id: user.id, authToken: user.authToken };
-    const shouldExpire = true;
 
-    return this.authHelper.encode(payload, shouldExpire);
+    return this.authHelper.encode(payload, { shouldExpire: true });
   }
 
-  public async register(): Promise<RegisterResponseDto> {
+  public async register(addCoins: boolean): Promise<RegisterResponseDto> {
     const user = new User();
 
-    user.coins = DEFAULT_COINS_QTY;
+    if (addCoins) {
+      user.coins = DEFAULT_COINS_QTY;
+    }
 
     const registeredUser = await this.userRepository.create(user);
 

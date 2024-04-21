@@ -2,5 +2,4 @@ import { BaseRepositoryInterface } from 'modules/models/base/base.repository.int
 import { User } from './user.entity';
 
 export interface UserRepositoryInterface extends BaseRepositoryInterface<User> {
-  getUserBalance(id: string): Promise<number>;
 }

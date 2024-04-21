@@ -11,7 +11,7 @@ export class LinkedAccountService {
   }
 
   public getLinkedAccounts(user): Promise<LinkedAccount[]> {
-    return this.linkedAccountRepository.findAll({ where: { owner: user } });
+    return this.linkedAccountRepository.findAll({ where: { owner: user.id } });
   }
 
   public createLinkedAccount(user, payload: CreateLinkedAccountDto): Promise<LinkedAccount> {
@@ -21,14 +21,10 @@ export class LinkedAccountService {
 
     const existingAccount = this.linkedAccountRepository.findOne({ where: criteria });
 
-    return existingAccount || this.linkedAccountRepository.create({ ...criteria, owner: user });
+    return existingAccount || this.linkedAccountRepository.create({ ...criteria, owner: user.id });
   }
 
   public async deleteLinkedAccount(accountId: string): Promise<void> {
     await this.linkedAccountRepository.delete(accountId);
-  }
-
-  public exists(criteria: any): Promise<boolean> {
-    return this.linkedAccountRepository.exists(criteria);
   }
 }

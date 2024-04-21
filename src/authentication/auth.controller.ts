@@ -1,6 +1,7 @@
-import { Body, Controller, Inject, Post } from '@nestjs/common';
-import { LoginDto, RegisterResponseDto } from './dto/auth.dto';
+import { Body, Controller, Inject, Post, ValidationPipe } from '@nestjs/common';
+import { LoginDto, RegisterResponseDto, RegisterDto } from './dto/auth.dto';
 import { AuthService } from './auth.service';
+import { pick } from 'common/utils/object';
 
 @Controller('auth')
 export class AuthController {
@@ -8,14 +9,12 @@ export class AuthController {
   private readonly authService: AuthService;
 
   @Post('register')
-  public async register(): Promise<RegisterResponseDto> {
-    const user = await this.authService.register();
+  public async register(
+    @Body(new ValidationPipe({ transform: true })) registerDto: RegisterDto,
+  ): Promise<RegisterResponseDto> {
+    const user = await this.authService.register(registerDto.addCoins);
 
-    return {
-      id:          user.id,
-      authToken:   user.authToken,
-      accessToken: user.accessToken,
-    };
+    return pick(user, ['id', 'authToken', 'accessToken']);
   }
 
   @Post('login')

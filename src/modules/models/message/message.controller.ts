@@ -5,17 +5,19 @@ import { MessageService } from 'modules/models/message/message.service';
 import { JwtAuthGuard } from 'authentication/auth.guard';
 import { Message } from 'modules/models/message/message.entity';
 import { Request, Response, Express } from 'express';
-import { CreateMessageBaseDto } from './dtos/create-message-base.dto';
-import { ActiveAssistantConfigDto } from './dtos/active-assistant-config.dto';
-import { ScanImageDto } from './dtos/scan-image.dto';
+import { CreateMessageBaseDto } from 'modules/models/message/dto/create-message-base.dto';
+import { ActiveAssistantConfigDto } from 'modules/models/message/dto/active-assistant-config.dto';
+import { ScanImageDto } from 'modules/models/message/dto/scan-image.dto';
 import { GuardParams } from 'common/decorators/metadata';
 import { OwnershipGuard } from 'common/guards/ownership.guard';
-import { GenerateImageDto } from 'modules/models/message/dtos/generate-image.dto';
+import { GenerateImageDto } from 'modules/models/message/dto/generate-image.dto';
 import { BalanceCheckGuard } from 'common/guards/balance-check.guard';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 
 const TWENTY_MB = 20 * 1024 * 1024;
 const TWENTY_MB_ERROR = 'File can not be greater than 20 mb';
 
+@ApiTags('Messages')
 @Controller('messages')
 @GuardParams({ repository: 'ChatRepository', column: 'id', reqIdentifier: 'chatId' })
 export class MessageController {
@@ -59,6 +61,7 @@ export class MessageController {
   @Post('image-scanner')
   @UseGuards(JwtAuthGuard, OwnershipGuard, BalanceCheckGuard)
   @UseInterceptors(FileInterceptor('image'))
+  @ApiBody({ type: ScanImageDto })
   public async scanImage(
     @Req() req: Request,
     @Res() res: Response,

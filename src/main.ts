@@ -1,15 +1,13 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from 'app.module';
 import { AppConfigService } from 'config/app/config.service';
 import { GlobalErrorFilter } from 'common/errors/errors.filter';
 import { SeederService } from 'database/seeders/seeder.service';
-import { SitoPatchingModule } from 'common/errors/schema-validator/patch';
-import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
-  SitoPatchingModule.patch();
 
   app.useGlobalFilters(new GlobalErrorFilter());
 
@@ -21,6 +19,19 @@ async function bootstrap() {
   const seeder = app.get(SeederService);
 
   await seeder.seed();
+
+  const options = new DocumentBuilder()
+    .setTitle('Chat API')
+    .setVersion('1.0')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, options);
+
+  delete document.paths['/'];
+
+  SwaggerModule.setup('api', app, document, {
+    swaggerOptions: { defaultModelsExpandDepth: -1 },
+  });
 
   await app.listen(appConfig.port).then(() => {
     console.log(`Server started on ${appConfig.url}`);

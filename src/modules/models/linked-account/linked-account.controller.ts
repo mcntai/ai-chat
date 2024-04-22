@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Inject, Param, Post, Req, UseGuards, Body, ValidationPipe } from '@nestjs/common';
+import { Controller, Delete, Get, Inject, Param, Post, Req, UseGuards, Body } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtAuthGuard } from 'authentication/auth.guard';
 import { LinkedAccountService } from 'modules/models/linked-account/linked-account.service';
@@ -23,7 +23,7 @@ export class LinkedAccountController {
   @UseGuards(JwtAuthGuard)
   public createLinkedAccount(
     @Req() req: Request,
-    @Body(new ValidationPipe({ transform: true })) createLinkedAccountDto: CreateLinkedAccountDto,
+    @Body() createLinkedAccountDto: CreateLinkedAccountDto,
   ): Promise<LinkedAccount> {
     return this.linkedAccountService.createLinkedAccount(req.user, createLinkedAccountDto);
   }

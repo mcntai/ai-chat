@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PreferenceRepository } from 'modules/models/preference/preference.repository';
-import { InternalServerError } from 'common/errors';
+import { validateOrReject } from 'class-validator';
 import * as assert from 'assert';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class PreferenceService {
     await this.preferenceRepository.create({ key, value });
   }
 
-  public async getValue(key: string, validationSchema?): Promise<any> {
+  public async getValue(key: string, validationSchema?: any): Promise<any> {
     assert(key, 'key is required');
 
     const { value } = await this.preferenceRepository.findOne({
@@ -24,10 +24,13 @@ export class PreferenceService {
     }) || {};
 
     if (validationSchema) {
-      await validationSchema.assert(value, {
-        clazz      : InternalServerError,
-        errorPrefix: `Preference.${key} is not properly configured.`,
-      });
+      try {
+        const payload = new validationSchema(value);
+
+        await validateOrReject(payload);
+      } catch (error) {
+        throw new Error(`Preference.${key} is not properly configured. ` + JSON.stringify(error));
+      }
     }
 
     return value;

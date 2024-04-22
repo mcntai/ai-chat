@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
+import * as path from 'path';
 
 export class APIError extends HttpException {
   constructor(message: string, statusCode: number) {
@@ -35,27 +36,27 @@ export class ValidationError extends APIError {
   }
 }
 
-export class InvalidArgumentsError extends APIError {
+export class InvalidArgumentsError extends HttpException {
   constructor(message) {
     super(message, HttpStatus.BAD_REQUEST);
   }
 }
 
-export class InternalServerError extends APIError {
+export class InternalServerError extends HttpException {
   public static USER_MESSAGE: string;
 
   constructor(message: string) {
-    super(message, HttpStatus.INTERNAL_SERVER_ERROR);
+    super(message || InternalServerError.USER_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }
 
-export class UnAuthorizedError extends APIError {
+export class UnAuthorizedError extends HttpException {
   constructor(message: string) {
     super(message, HttpStatus.UNAUTHORIZED);
   }
 }
 
-export class IntegrationError extends APIError {
+export class IntegrationError extends HttpException {
   constructor(message: string) {
     super(message, HttpStatus.INTERNAL_SERVER_ERROR);
   }
@@ -72,3 +73,21 @@ export const argumentsAssert = (condition, message) => {
 };
 
 InternalServerError.USER_MESSAGE = 'Internal Server Error';
+
+export const stringifyStack = (error: any) => {
+  if (error instanceof Error) {
+    const [firstLine, ...restLines] = error.stack.split('\n');
+
+    const rootPath = path.resolve(__dirname, '../..');
+
+    const stack = restLines.map(line => line.replace(rootPath, '').trim());
+
+    return firstLine + '. ' + JSON.stringify({ stack });
+  }
+
+  const result = error.message || error;
+
+  return typeof result === 'string'
+    ? result
+    : JSON.stringify(result);
+};

@@ -3,8 +3,18 @@ import { Keys } from 'modules/models/preference/preference.entity';
 import { PreferenceService } from 'modules/models/preference/preference.service';
 import { ACTIVE_AI_TYPE } from 'common/constants/message';
 import * as assert from 'assert';
-import { object, string } from 'sito';
 import { GenericHandlerInterface } from 'providers/ai-assistant/generic-handler.interface';
+import { IsNotEmpty, IsObject } from 'class-validator';
+
+class AiHandlersConfigSchema {
+  constructor(data: any) {
+    Object.assign(this, data);
+  }
+
+  @IsObject()
+  @IsNotEmpty()
+  active: object;
+}
 
 @Injectable()
 export class AiAssistantService {
@@ -12,18 +22,7 @@ export class AiAssistantService {
   }
 
   public async getHandler(aiType: ACTIVE_AI_TYPE): Promise<GenericHandlerInterface> {
-    const commonActiveValidator = string().notEmpty().required();
-
-    const config = await this.preferenceService.getValue(Keys.AI_HANDLERS, object({
-        active: object({
-          textGenerator:  commonActiveValidator,
-          imageGenerator: commonActiveValidator,
-          imageScanner:   commonActiveValidator,
-        }).required().notEmpty(),
-      })
-        .required()
-        .notEmpty(),
-    );
+    const config = await this.preferenceService.getValue(Keys.AI_HANDLERS, AiHandlersConfigSchema);
 
     const handlerName = config.active[aiType];
 

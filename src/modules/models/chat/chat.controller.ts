@@ -1,5 +1,5 @@
 import { ChatService } from 'modules/models/chat/chat.service';
-import { Controller, Req, Get, Put, Delete, Param, Body, UseGuards, ValidationPipe, Query } from '@nestjs/common';
+import { Controller, Req, Get, Put, Delete, Param, Body, UseGuards, Query } from '@nestjs/common';
 import { Chat } from 'modules/models/chat/chat.entity';
 import { Request } from 'express';
 import { JwtAuthGuard } from 'authentication/auth.guard';
@@ -36,7 +36,7 @@ export class ChatController {
   public updateChat(
     @Req() req: Request,
     @Param('id') id: string,
-    @Body(new ValidationPipe({ transform: true })) updateChatDto: UpdateChatDto,
+    @Body() updateChatDto: UpdateChatDto,
   ): Promise<Chat> {
     return this.chatService.updateChat(id, updateChatDto);
   }

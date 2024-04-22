@@ -1,18 +1,17 @@
 import { Controller, Get, Post, Req, Query, Body, Res, ParseFilePipeBuilder, HttpStatus } from '@nestjs/common';
-import { UseGuards, ValidationPipe, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MessageService } from 'modules/models/message/message.service';
 import { JwtAuthGuard } from 'authentication/auth.guard';
 import { Message } from 'modules/models/message/message.entity';
 import { Request, Response, Express } from 'express';
-import { CreateMessageBaseDto, createMsgValidationSchema } from './dtos/create-message-base.dto';
+import { CreateMessageBaseDto } from './dtos/create-message-base.dto';
+import { ActiveAssistantConfigDto } from './dtos/active-assistant-config.dto';
 import { ScanImageDto } from './dtos/scan-image.dto';
 import { GuardParams } from 'common/decorators/metadata';
 import { OwnershipGuard } from 'common/guards/ownership.guard';
 import { GenerateImageDto } from 'modules/models/message/dtos/generate-image.dto';
 import { BalanceCheckGuard } from 'common/guards/balance-check.guard';
-import { ACTIVE_AI_TYPE } from 'common/constants/message';
-import { activeAssistantConfigSchema } from 'modules/models/message/schemas';
 
 const TWENTY_MB = 20 * 1024 * 1024;
 const TWENTY_MB_ERROR = 'File can not be greater than 20 mb';
@@ -39,8 +38,6 @@ export class MessageController {
     @Res() res: Response,
     @Body() textCompletionDto: CreateMessageBaseDto,
   ): Promise<void> {
-    await createMsgValidationSchema.assert(textCompletionDto);
-
     const stream = await this.messageService.generateText(req.user, textCompletionDto);
 
     for await (const chunk of stream) {
@@ -54,7 +51,7 @@ export class MessageController {
   @UseGuards(JwtAuthGuard, OwnershipGuard, BalanceCheckGuard)
   public generateImage(
     @Req() req: Request,
-    @Body(new ValidationPipe({ transform: true })) generateImageDto: GenerateImageDto,
+    @Body() generateImageDto: GenerateImageDto,
   ): Promise<string> {
     return this.messageService.generateImage(req.user, generateImageDto);
   }
@@ -71,7 +68,7 @@ export class MessageController {
         .addMaxSizeValidator({ maxSize: TWENTY_MB, message: TWENTY_MB_ERROR })
         .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
     ) image: Express.Multer.File,
-    @Body(new ValidationPipe({ transform: true })) scanImageDto: ScanImageDto,
+    @Body() scanImageDto: ScanImageDto,
   ): Promise<void> {
     const stream = await this.messageService.scanImage(req.user, scanImageDto, image);
 
@@ -84,9 +81,7 @@ export class MessageController {
 
   @Get('active-handler-config')
   @UseGuards(JwtAuthGuard)
-  public async getActiveHandlerConfig(@Query('aiType') aiType: ACTIVE_AI_TYPE): Promise<any> {
-    await activeAssistantConfigSchema.assert({ aiType });
-
-    return this.messageService.getActiveHandlerConfig(aiType);
+  public getActiveHandlerConfig(@Query('aiType') query: ActiveAssistantConfigDto): Promise<any> {
+    return this.messageService.getActiveHandlerConfig(query.aiType);
   }
 }

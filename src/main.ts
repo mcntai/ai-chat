@@ -4,6 +4,7 @@ import { AppConfigService } from 'config/app/config.service';
 import { GlobalErrorFilter } from 'common/errors/errors.filter';
 import { SeederService } from 'database/seeders/seeder.service';
 import { SitoPatchingModule } from 'common/errors/schema-validator/patch';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,6 +12,8 @@ async function bootstrap() {
   SitoPatchingModule.patch();
 
   app.useGlobalFilters(new GlobalErrorFilter());
+
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   app.enableCors();
 

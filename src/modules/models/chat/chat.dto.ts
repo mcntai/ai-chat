@@ -5,18 +5,21 @@ import { ApiProperty } from '@nestjs/swagger';
 export class UpdateChatDto {
   @IsBoolean()
   @IsOptional()
+  @ApiProperty({ required: false })
   public readonly archived: boolean;
 
   @IsBoolean()
   @IsOptional()
+  @ApiProperty({ required: false })
   public readonly pinned: boolean;
 
   @IsOptional()
   @IsString()
+  @ApiProperty({ required: false })
   public readonly name: string;
 }
 
-export class GetChatBaseResponseDto {
+export class ChatBaseResponseDto {
   @IsString()
   @ApiProperty()
   public readonly id: string;
@@ -38,7 +41,13 @@ export class GetChatBaseResponseDto {
   public readonly created: Date;
 }
 
-export class GetChatResponseDto extends GetChatBaseResponseDto {
+export class ChatUpdatedResponseDto extends ChatBaseResponseDto {
+  @IsDate()
+  @ApiProperty()
+  public readonly updated: Date;
+}
+
+export class ChatWithMessagesResponseDto extends ChatBaseResponseDto {
   @IsArray()
   @ApiProperty({ type: MessageResponseDto, isArray: true })
   public readonly messages: MessageResponseDto[];

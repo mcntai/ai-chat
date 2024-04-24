@@ -1,8 +1,10 @@
-import { Controller, Inject, Get, Delete, Req, UseGuards, HttpCode } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Inject, Get, Delete, Req, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiHeader, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from 'authentication/auth.guard';
 import { Request } from 'express';
+import { ApiNoContentResponse } from '@nestjs/swagger/dist/decorators/api-response.decorator';
+import { REQUEST_HEADERS } from 'common/constants/swagger';
 
 @Controller('users')
 @ApiTags('Users')
@@ -13,21 +15,26 @@ export class UserController {
   @Get('balance')
   @ApiOkResponse({ schema: { type: 'number' } })
   @UseGuards(JwtAuthGuard)
+  @ApiHeader(REQUEST_HEADERS.AUTHORIZATION)
   public getUserBalance(@Req() req: Request): Promise<number> {
     return this.userService.getUserBalance(req.user);
   }
 
   @Delete()
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(JwtAuthGuard)
-  public deleteUser(@Req() req: Request): Promise<void> {
-    return this.userService.deleteUser(req.user);
+  @ApiHeader(REQUEST_HEADERS.AUTHORIZATION)
+  @ApiNoContentResponse({ description: 'Resource deleted' })
+  public async deleteUser(@Req() req: Request): Promise<void> {
+    await this.userService.deleteUser(req.user);
   }
 
   @Delete('data')
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(JwtAuthGuard)
-  public deleteUserData(@Req() req: Request): Promise<void> {
-    return this.userService.deleteUserData(req.user);
+  @ApiHeader(REQUEST_HEADERS.AUTHORIZATION)
+  @ApiNoContentResponse({ description: 'Resource deleted' })
+  public async deleteUserData(@Req() req: Request): Promise<void> {
+    await this.userService.deleteUserData(req.user);
   }
 }

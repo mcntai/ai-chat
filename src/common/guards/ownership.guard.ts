@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { argumentsAssert } from 'common/errors';
+import { notFoundAssert } from 'common/errors';
 import { CommonService } from 'modules/common/common.service';
 
 @Injectable()
@@ -37,7 +37,7 @@ export class OwnershipGuard implements CanActivate {
         guardParams.repository,
         { [column]: recordId, 'owner.id': userId, ...(whereClause) });
 
-      argumentsAssert(recordExists, `Record with such ${guardParams.reqIdentifier} was not found`);
+      notFoundAssert(recordExists, `Record with such ${guardParams.reqIdentifier} was not found`);
     }
 
     return true;

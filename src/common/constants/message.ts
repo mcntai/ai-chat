@@ -20,3 +20,5 @@ export enum ATTACHMENT_TYPE {
   IMAGE = 'image',
   AUDIO = 'audio',
 }
+
+export const AVAILABLE_FILE_FORMATS = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'heif', 'heic'];

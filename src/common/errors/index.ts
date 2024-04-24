@@ -62,6 +62,12 @@ export class IntegrationError extends HttpException {
   }
 }
 
+export class NotFoundError extends HttpException {
+  constructor(message: string) {
+    super(message, HttpStatus.NOT_FOUND);
+  }
+}
+
 export const argumentsAssert = (condition, message) => {
   if (!message) {
     throw new Error('message is required');
@@ -69,6 +75,16 @@ export const argumentsAssert = (condition, message) => {
 
   if (!condition) {
     throw new InvalidArgumentsError(message);
+  }
+};
+
+export const notFoundAssert = (condition, message) => {
+  if (!message) {
+    throw new Error('message is required');
+  }
+
+  if (!condition) {
+    throw new NotFoundError(message);
   }
 };
 

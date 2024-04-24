@@ -2,6 +2,7 @@ import { CreateMessageBaseDto } from 'modules/models/message/dto/create-message-
 import { IsOptional, IsString, IsNotEmpty } from 'class-validator';
 import { Express } from 'express';
 import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { AVAILABLE_FILE_FORMATS } from 'common/constants/message';
 
 export class ScanImageDto extends OmitType(CreateMessageBaseDto, ['text']) {
   @IsOptional()
@@ -9,7 +10,10 @@ export class ScanImageDto extends OmitType(CreateMessageBaseDto, ['text']) {
   @ApiProperty({ type: 'string', required: false })
   public readonly text?: string;
 
-  @ApiProperty({ type: 'string', format: 'binary' })
+  @ApiProperty({
+    type:        'file',
+    description: `<b>Max file size:</b> 20mb<br><b>Available formats:</b> [${AVAILABLE_FILE_FORMATS}]`,
+  })
   public readonly image: Express.Multer.File;
 
   @IsString()

@@ -3,7 +3,7 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterResponseDto, RegisterDto } from './dto/register.dto';
 import { AuthService } from './auth.service';
 import { pick } from 'common/utils/object';
-import { ApiResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags, ApiCreatedResponse } from '@nestjs/swagger';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -12,7 +12,7 @@ export class AuthController {
   private readonly authService: AuthService;
 
   @Post('register')
-  @ApiResponse({ status: 201, type: RegisterResponseDto })
+  @ApiCreatedResponse({ type: RegisterResponseDto })
   public async register(
     @Body() registerDto: RegisterDto,
   ): Promise<RegisterResponseDto> {
@@ -22,7 +22,10 @@ export class AuthController {
   }
 
   @Post('login')
-  @ApiOkResponse({ type: 'string' })
+  @ApiOkResponse({
+    type:        'string',
+    description: 'Returns accessToken to be used as a value of Authorization header in the following requests.',
+  })
   public login(@Body() payload: LoginDto): Promise<string> {
     return this.authService.login(payload);
   }

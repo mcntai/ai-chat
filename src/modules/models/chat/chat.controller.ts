@@ -3,10 +3,11 @@ import { Controller, Req, Get, Put, Delete, Param, Body, UseGuards, Query, HttpC
 import { Chat } from 'modules/models/chat/chat.entity';
 import { Request } from 'express';
 import { JwtAuthGuard } from 'authentication/auth.guard';
-import { UpdateChatDto } from 'modules/models/chat/chat.dto';
+import { GetChatBaseResponseDto, GetChatResponseDto, UpdateChatDto } from 'modules/models/chat/chat.dto';
 import { OwnershipGuard } from 'common/guards/ownership.guard';
 import { GuardParams } from 'common/decorators/metadata';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { plainToInstance } from 'class-transformer';
 
 @Controller('chats')
 @ApiTags('Chats')
@@ -17,20 +18,24 @@ export class ChatController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
+  @ApiOkResponse({ type: GetChatBaseResponseDto, isArray: true })
   public getChats(
     @Req() req: Request,
     @Query('archived') archived: boolean,
-  ): Promise<Chat[]> {
+  ): Promise<GetChatBaseResponseDto[]> {
     return this.chatService.getChats(req.user, archived);
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard, OwnershipGuard)
-  public getChat(
+  @ApiOkResponse({ type: GetChatResponseDto })
+  public async getChat(
     @Req() req: Request,
     @Param('id') id: string,
-  ): Promise<Chat> {
-    return this.chatService.getChatByCriteria({ id });
+  ): Promise<GetChatResponseDto> {
+    const chat = await this.chatService.getChatByCriteria({ id });
+
+    return plainToInstance(GetChatResponseDto, chat);
   }
 
   @Put(':id')

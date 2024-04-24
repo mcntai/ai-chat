@@ -13,10 +13,10 @@ export class RegisterResponseDto {
   public readonly id: string;
 
   @IsString()
-  @ApiProperty()
+  @ApiProperty({ description: 'token to be used in request body for /login endpoint' })
   public readonly authToken: string;
 
   @IsString()
-  @ApiProperty()
+  @ApiProperty({ description: 'token to be used in Authorization header for the following requests' })
   public readonly accessToken: string;
 }

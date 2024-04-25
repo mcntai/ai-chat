@@ -13,5 +13,8 @@ export const Extension = {
   ICO:  '.ico',
   WBMP: '.wbmp',
   WEBP: '.webp',
+  BMP:  '.bmp',
+  HEIF: '.heif',
+  HEIC: '.heic',
   TXT:  '.txt',
 };

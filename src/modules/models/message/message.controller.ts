@@ -18,6 +18,7 @@ import { plainToInstance } from 'class-transformer';
 import { REQUEST_HEADERS, RESPONSE_OPTIONS } from 'common/constants/swagger';
 import { AVAILABLE_FILE_FORMATS } from 'common/constants/message';
 import { ApiUnprocessableEntityResponse } from '@nestjs/swagger/dist/decorators/api-response.decorator';
+import { ImageTypeValidationPipe } from 'modules/models/message/pipes/image-type-validation.pipe';
 
 const TWENTY_MB = 20 * 1024 * 1024;
 const TWENTY_MB_ERROR = 'File can not be greater than 20 mb';
@@ -94,6 +95,7 @@ export class MessageController {
         .addFileTypeValidator({ fileType: new RegExp(AVAILABLE_FILE_FORMATS.join('|')) })
         .addMaxSizeValidator({ maxSize: TWENTY_MB, message: TWENTY_MB_ERROR })
         .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
+      ImageTypeValidationPipe,
     ) image: Express.Multer.File,
     @Body() scanImageDto: ScanImageDto,
   ): Promise<void> {

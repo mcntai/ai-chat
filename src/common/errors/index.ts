@@ -1,40 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import * as path from 'path';
-
-export class APIError extends HttpException {
-  constructor(message: string, statusCode: number) {
-    super(message, statusCode);
-  }
-
-  toJSON() {
-    return { message: this.message, ...this };
-  }
-}
-
-export class ValidationError extends APIError {
-  public path: string;
-  public key: string;
-  public value: any;
-  public payload: any;
-  public statusCode: number;
-
-  constructor(message, details: any = {}) {
-    super(message, HttpStatus.BAD_REQUEST);
-
-    this.path = details.path;
-    this.key = details.key;
-    this.value = details.value;
-    this.payload = details.payload;
-  }
-
-  toJSON() {
-    return {
-      ...super.toJSON(),
-      path:       this.path,
-      statusCode: this.statusCode,
-    };
-  }
-}
+import * as assert from 'assert';
 
 export class InvalidArgumentsError extends HttpException {
   constructor(message) {
@@ -69,9 +35,7 @@ export class NotFoundError extends HttpException {
 }
 
 export const argumentsAssert = (condition, message) => {
-  if (!message) {
-    throw new Error('message is required');
-  }
+  assert(message, 'message is required');
 
   if (!condition) {
     throw new InvalidArgumentsError(message);
@@ -79,9 +43,7 @@ export const argumentsAssert = (condition, message) => {
 };
 
 export const notFoundAssert = (condition, message) => {
-  if (!message) {
-    throw new Error('message is required');
-  }
+  assert(message, 'message is required');
 
   if (!condition) {
     throw new NotFoundError(message);

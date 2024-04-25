@@ -4,7 +4,7 @@ import * as assert from 'assert';
 import { Readable } from 'stream';
 import * as path from 'path';
 
-const { CSV, GIF, JPEG, JPG, PNG, SVG, TIFF, ICO, WBMP, WEBP, PDF, XLS, XLSX, XML, TXT } = Extension;
+const { CSV, GIF, JPEG, JPG, PNG, SVG, TIFF, ICO, WBMP, WEBP, PDF, XLS, XLSX, XML, TXT, BMP, HEIF, HEIC } = Extension;
 
 export const ContentTypeByExtension = {
   [CSV]:  'text/csv',
@@ -17,6 +17,9 @@ export const ContentTypeByExtension = {
   [ICO]:  'image/vnd.microsoft.icon',
   [WBMP]: 'image/vnd.wap.wbmp',
   [WEBP]: 'image/webp',
+  [BMP]:  'image/bmp',
+  [HEIF]: 'image/heif',
+  [HEIC]: 'image/heic',
   [PDF]:  'application/pdf',
   [XLS]:  'application/vnd.ms-excel',
   [XLSX]: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

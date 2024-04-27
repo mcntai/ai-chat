@@ -10,8 +10,8 @@ export class MinioConfigService {
     return this.configService.get<string>('minio.bucket');
   }
 
-  get endPoint(): string {
-    return this.configService.get<string>('minio.endPoint');
+  get host(): string {
+    return this.configService.get<string>('minio.host');
   }
 
   get port(): number {

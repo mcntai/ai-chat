@@ -11,7 +11,7 @@ import { MinioConfigService } from 'config/fs/minio/config.service';
       inject:     [MinioConfigService],
       useFactory: (configService: MinioConfigService) => ({
         useSSL:    true,
-        endPoint:  configService.endPoint,
+        endPoint:  configService.host,
         port:      configService.port,
         accessKey: configService.accessKey,
         secretKey: configService.secretKey,

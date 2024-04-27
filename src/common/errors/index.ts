@@ -22,12 +22,6 @@ export class UnAuthorizedError extends HttpException {
   }
 }
 
-export class IntegrationError extends HttpException {
-  constructor(message: string) {
-    super(message, HttpStatus.INTERNAL_SERVER_ERROR);
-  }
-}
-
 export class NotFoundError extends HttpException {
   constructor(message: string) {
     super(message, HttpStatus.NOT_FOUND);

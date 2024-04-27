@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { MinioService } from 'nestjs-minio-client';
-import { IntegrationError } from 'common/errors';
 import { MinioConfigService } from 'config/fs/minio/config.service';
 import { toArray } from 'common/utils/array';
 
@@ -13,7 +12,7 @@ interface UploadParams {
 @Injectable()
 export class MinioClientService {
   private readonly bucketName: string;
-  private readonly url: string;
+  private readonly host: string;
   private readonly port: number;
 
   public get client() {
@@ -25,7 +24,7 @@ export class MinioClientService {
     private readonly minio: MinioService,
   ) {
     this.bucketName = this.config.bucket;
-    this.url = this.config.endPoint;
+    this.host = this.config.host;
     this.port = this.config.port;
   }
 
@@ -34,16 +33,16 @@ export class MinioClientService {
 
     await this.client.putObject(this.bucketName, path, data, { 'Content-Type': contentType })
       .catch(err => {
-        throw new IntegrationError('Failed to upload file ' + err.message);
+        throw new Error('Failed to upload file ' + err.message);
       });
 
-    return `${this.url}:${this.port}/${this.bucketName}/${path}`;
+    return `https://${this.host}:${this.port}/${this.bucketName}/${path}`;
   }
 
   async delete(objetName: string | string[]) {
     await this.client.removeObjects(this.bucketName, toArray(objetName))
       .catch(err => {
-        throw new IntegrationError('Failed to delete file ' + err.message);
+        throw new Error('Failed to delete file ' + err.message);
       });
   }
 
@@ -57,7 +56,7 @@ export class MinioClientService {
     }
 
     stream.on('error', err => {
-      throw new IntegrationError('Failed to list objects ' + err.message);
+      throw new Error('Failed to list objects ' + err.message);
     });
 
     return names;

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { RegisterResponseDto } from './dto/register.dto';
 import { argumentsAssert } from 'common/errors';
@@ -10,11 +10,11 @@ const DEFAULT_COINS_QTY = 3;
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly userRepository: UserRepository) {
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly authHelper: AuthHelper
+    ) {
   }
-
-  @Inject(AuthHelper)
-  private readonly authHelper: AuthHelper;
 
   private generateAccessToken(user: User): string {
     const payload = { id: user.id, authToken: user.authToken };

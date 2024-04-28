@@ -18,7 +18,6 @@ import { join } from 'path';
         database:    mysqlConfigService.database,
         entities:    [join(process.cwd(), 'dist/**/*.entity.js')],
         synchronize: true,
-        logging:     true,
       }),
       inject:     [MysqlConfigService],
     } as TypeOrmModuleAsyncOptions),

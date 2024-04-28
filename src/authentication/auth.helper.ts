@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'modules/models/user/user.entity';
 import { UserRepository } from 'modules/models/user/user.repository';
+import { omitBy } from 'common/utils/object';
 import * as assert from 'assert';
 
 @Injectable()
@@ -24,9 +25,10 @@ export class AuthHelper {
   encode(payload: any, { shouldExpire = false } = {}): string {
     assert(payload, 'payload is required');
 
-    const signOptions = shouldExpire ? { expiresIn: this.expiresIn } : {};
-
-    return this.jwt.sign(payload, signOptions);
+    return this.jwt.sign(payload, omitBy({
+      secret:    this.secret,
+      expiresIn: shouldExpire ? this.expiresIn : undefined,
+    }));
   }
 
   decode(token: string): object {

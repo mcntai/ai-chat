@@ -10,7 +10,7 @@ import { FsModule } from 'providers/fs/fs.module';
   imports: [TypeOrmModule.forFeature([User]), FsModule],
   controllers: [UserController],
   providers:   [UserRepository, UserService],
-  exports:     [UserService],
+  exports:     [UserRepository, UserService],
 })
 export class UserModule {
 }

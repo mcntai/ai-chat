@@ -8,12 +8,14 @@ import { JwtStrategy } from './jwt.strategy';
 import { AuthHelper } from './auth.helper';
 import { AppConfigModule } from 'config/app/config.module';
 import { AppConfigService } from 'config/app/config.service';
+import { UserModule } from 'modules/models/user/user.module';
 import { User } from 'modules/models/user/user.entity';
 import { UserRepository } from 'modules/models/user/user.repository';
 
 @Module({
   imports:   [
     AppConfigModule,
+    UserModule,
     TypeOrmModule.forFeature([User]),
     PassportModule.register({ defaultStrategy: 'jwt', property: 'user' }),
     JwtModule.registerAsync({
@@ -26,7 +28,6 @@ import { UserRepository } from 'modules/models/user/user.repository';
     }),
   ],
   providers: [
-    UserRepository,
     AuthService,
     JwtStrategy,
     {

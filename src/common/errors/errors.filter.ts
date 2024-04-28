@@ -7,13 +7,19 @@ const errorLogger = new Logger('ErrorLogger');
 @Catch()
 export class GlobalErrorFilter implements ExceptionFilter {
   catch(error: any, host: ArgumentsHost) {
-    const response = host.switchToHttp().getResponse();
+    const ctx = host.switchToHttp();
+    const request = ctx.getRequest();
+    const response = ctx.getResponse();
 
     if (!(error instanceof HttpException)) {
       error = new InternalServerError('[UNHANDLED ERROR] ' + stringifyStack(error));
     }
 
-    errorLogger.error(`${error.name}: ${error.message}`);
+    errorLogger.error(
+      `${request.method} ${request.url}:`
+      + ` ${error.name}:`
+      + ` ${error.getResponse().message || error.message}`,
+    );
 
     if (error instanceof InternalServerError) {
       error = new InternalServerError(InternalServerError.USER_MESSAGE);

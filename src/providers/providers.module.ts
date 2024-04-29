@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { MysqlDatabaseProviderModule } from './database/mysql/provider.module';
+import { MysqlDatabaseProviderModule } from './database/mysql/mysql.module';
 import { FsModule } from 'providers/fs/fs.module';
 import { AiAssistantModule } from 'providers/ai-assistant/ai-assistant.module';
 

@@ -19,14 +19,17 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "*": [
-        "./src/*",
+        "./src/*"
+      ],
+      "test/*": [
+        "test/*"
       ]
     }
   },
   "include": [
     "test/**/*.ts",
     "src/**/*.ts",
-    "sandbox/**/*.ts",
+    "sandbox/**/*.ts"
   ],
   "exclude": [
     "node_modules",
